@@ -205,8 +205,7 @@ export function ControlPanel({
   // Update tabs content for directions and alerts
   return (
     <div className={`w-96 border-r ${isDarkMode ? "bg-gray-900 text-gray-100" : "bg-background"} p-4 overflow-y-auto`}>
-      <div className="mb-4 flex items-center justify-between">
-        <h2 className="text-lg font-semibold">Control Panel</h2>
+      <div className="mb-5 flex items-center justify-end">
         <Button variant="outline" size="icon" onClick={onToggleDarkMode}>
           {isDarkMode ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
         </Button>
