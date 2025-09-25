@@ -12,6 +12,7 @@ interface RoutePreviewProps {
   isSimulationActive?: boolean
   isManuallyEnteredStart?: boolean
   vehicleType?: 'ambulance' | 'fire'
+  isMapViewFreezed?: boolean
   trafficLights?: Array<{
     id: string
     position: { lat: number; lng: number }
@@ -25,6 +26,7 @@ export function RoutePreview({
   isSimulationActive = false,
   isManuallyEnteredStart = false,
   vehicleType = 'ambulance',
+  isMapViewFreezed = false,
   trafficLights = []
 }: RoutePreviewProps) {
   const polylineRef = useRef<google.maps.Polyline | null>(null)
@@ -126,9 +128,9 @@ export function RoutePreview({
             directionsRendererRef.current.setDirections(response);
           }
 
-          // Don't fit the map to the route during simulation
-          // This prevents the map from moving which can cause jitter
-          if (window.googleMap && !isSimulationActive) {
+          // Don't fit the map to the route during simulation or when map view is frozen
+          // This prevents the map from moving which can cause jitter or override user's view preference
+          if (window.googleMap && !isSimulationActive && !isMapViewFreezed) {
             const bounds = new window.google.maps.LatLngBounds();
             bounds.extend(new window.google.maps.LatLng(start.lat, start.lng));
             bounds.extend(new window.google.maps.LatLng(end.lat, end.lng));

@@ -28,6 +28,8 @@ export interface StaggeredMenuProps {
   changeMenuColorOnOpen?: boolean;
   onMenuOpen?: () => void;
   onMenuClose?: () => void;
+  isDarkMode?: boolean;
+  onThemeToggle?: () => void;
 }
 
 export const StaggeredMenu: React.FC<StaggeredMenuProps> = ({
@@ -44,7 +46,9 @@ export const StaggeredMenu: React.FC<StaggeredMenuProps> = ({
   changeMenuColorOnOpen = true,
   accentColor = '#5227FF',
   onMenuOpen,
-  onMenuClose
+  onMenuClose,
+  isDarkMode = false,
+  onThemeToggle
 }: StaggeredMenuProps) => {
   const [open, setOpen] = useState(false);
   const openRef = useRef(false);
@@ -350,6 +354,7 @@ export const StaggeredMenu: React.FC<StaggeredMenuProps> = ({
       style={accentColor ? { ['--sm-accent' as any]: accentColor } : undefined}
       data-position={position}
       data-open={open || undefined}
+      data-dark-mode={isDarkMode || undefined}
     >
       <div ref={preLayersRef} className="sm-prelayers" aria-hidden="true">
         {(() => {
@@ -407,17 +412,28 @@ export const StaggeredMenu: React.FC<StaggeredMenuProps> = ({
               </li>
             )}
           </ul>
-          {displaySocials && socialItems && socialItems.length > 0 && (
+          {displaySocials && ((socialItems && socialItems.length > 0) || onThemeToggle) && (
             <div className="sm-socials" aria-label="Social links">
               <h3 className="sm-socials-title">Socials</h3>
               <ul className="sm-socials-list" role="list">
-                {socialItems.map((s, i) => (
+                {socialItems && socialItems.map((s, i) => (
                   <li key={s.label + i} className="sm-socials-item">
                     <a href={s.link} target="_blank" rel="noopener noreferrer" className="sm-socials-link">
                       {s.label}
                     </a>
                   </li>
                 ))}
+                {onThemeToggle && (
+                  <li className="sm-socials-item">
+                    <button
+                      onClick={onThemeToggle}
+                      className="sm-socials-link"
+                      aria-label={`Switch to ${isDarkMode ? 'light' : 'dark'} mode`}
+                    >
+                      {isDarkMode ? 'Light Mode' : 'Dark Mode'}
+                    </button>
+                  </li>
+                )}
               </ul>
             </div>
           )}

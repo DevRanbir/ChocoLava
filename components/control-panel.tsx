@@ -3,7 +3,7 @@
 import type React from "react"
 
 import { useState, useEffect } from "react"
-import { Search, MapPin, AlertTriangle, Sun, Moon, Clock, Check, BanIcon, AlertCircle } from "lucide-react"
+import { Search, MapPin, AlertTriangle, Sun, Moon, Clock, Check, BanIcon, AlertCircle, Map } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
@@ -26,6 +26,7 @@ interface ControlPanelProps {
   ambulanceCount: number
   isDarkMode: boolean
   onToggleDarkMode: () => void
+  onMapPicker?: (type: 'start' | 'destination') => void
   routeInfo?: {
     steps?: Array<{
       instruction: string;
@@ -71,6 +72,7 @@ export function ControlPanel({
   ambulanceCount,
   isDarkMode,
   onToggleDarkMode,
+  onMapPicker,
   routeInfo,
 }: ControlPanelProps) {
   const [startPoint, setStartPoint] = useState("")
@@ -79,12 +81,45 @@ export function ControlPanel({
   const [selectedStartLocation, setSelectedStartLocation] = useState("")
   const [selectedDestLocation, setSelectedDestLocation] = useState("")
   const [isNarratorEnabled, setIsNarratorEnabled] = useState(true)
+  const [isInstructionPanelExpanded, setIsInstructionPanelExpanded] = useState(true)
+  const [isMapPickerMode, setIsMapPickerMode] = useState<'start' | 'destination' | null>(null)
   
   // Add a local version of current step to ensure UI updates even if props don't change
   const [localCurrentStep, setLocalCurrentStep] = useState(0)
   
   // Track when routeInfo updates to force re-render
   const [lastRouteInfoUpdate, setLastRouteInfoUpdate] = useState(Date.now())
+
+  // Handle map picker activation
+  const handleMapPicker = (type: 'start' | 'destination') => {
+    if (onMapPicker) {
+      setIsMapPickerMode(type)
+      onMapPicker(type)
+    }
+  }
+
+  // Listen for map picker results
+  useEffect(() => {
+    const handleMapPickerResult = (event: CustomEvent) => {
+      const { type, coordinates } = event.detail
+      
+      if (type === 'start' && isMapPickerMode === 'start') {
+        setStartPoint(`${coordinates.lat},${coordinates.lng}`)
+        setSelectedStartLocation("") // Clear predefined selection
+        setIsMapPickerMode(null)
+      } else if (type === 'destination' && isMapPickerMode === 'destination') {
+        setDestination(`${coordinates.lat},${coordinates.lng}`)
+        setSelectedDestLocation("") // Clear predefined selection
+        setIsMapPickerMode(null)
+      }
+    }
+
+    window.addEventListener('map-picker-result', handleMapPickerResult as EventListener)
+    
+    return () => {
+      window.removeEventListener('map-picker-result', handleMapPickerResult as EventListener)
+    }
+  }, [isMapPickerMode])
 
   // Connect the narrator switch to the actual narrator functionality
   // Add a function to handle narrator toggle
@@ -205,10 +240,7 @@ export function ControlPanel({
   // Update tabs content for directions and alerts
   return (
     <div className={`w-96 border-r ${isDarkMode ? "bg-gray-900 text-gray-100" : "bg-background"} p-4 overflow-y-auto`}>
-      <div className="mb-5 flex items-center justify-end">
-        <Button variant="outline" size="icon" onClick={onToggleDarkMode}>
-          {isDarkMode ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
-        </Button>
+      <div className="mb-16 flex items-center justify-end">
       </div>
 
       <Tabs defaultValue="route" className={isDarkMode ? "text-white" : ""}>
@@ -266,13 +298,52 @@ export function ControlPanel({
                     <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
                     <Input
                       placeholder="Enter start coordinates"
-                      className={`pl-8 ${isDarkMode ? "bg-gray-700 text-white border-gray-600 placeholder-gray-400" : ""}`}
+                      className={`pl-8 pr-10 ${isDarkMode ? "bg-gray-700 text-white border-gray-600 placeholder-gray-400" : ""}`}
                       value={startPoint}
                       onChange={(e) => setStartPoint(e.target.value)}
                       disabled={isSimulationRunning}
                     />
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => handleMapPicker('start')}
+                      disabled={isSimulationRunning}
+                      className={`absolute right-1 top-1 h-8 w-8 p-0 ${
+                        isMapPickerMode === 'start' 
+                          ? isDarkMode ? 'bg-blue-700 text-white' : 'bg-blue-100 text-blue-600' 
+                          : isDarkMode ? 'hover:bg-gray-600' : 'hover:bg-gray-100'
+                      }`}
+                      title="Pick from map"
+                    >
+                      <Map className="h-4 w-4" />
+                    </Button>
                   </div>
                 </div>
+
+                {isMapPickerMode && (
+                  <div className={`mt-2 p-3 rounded-md border-2 border-dashed ${
+                    isDarkMode 
+                      ? 'bg-blue-900 border-blue-400 text-blue-200' 
+                      : 'bg-blue-50 border-blue-400 text-blue-700'
+                  }`}>
+                    <div className="flex items-center gap-2">
+                      <Map className="h-4 w-4" />
+                      <span className="text-sm font-medium">
+                        Click on the map to select {isMapPickerMode === 'start' ? 'start point' : 'destination'}
+                      </span>
+                    </div>
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => setIsMapPickerMode(null)}
+                      className="mt-2 text-xs"
+                    >
+                      Cancel selection
+                    </Button>
+                  </div>
+                )}
 
                 <div className="space-y-2">
                   <label className={isDarkMode ? "text-sm font-medium text-white" : "text-sm font-medium"}>
@@ -303,11 +374,26 @@ export function ControlPanel({
                     <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
                     <Input
                       placeholder="Enter destination coordinates"
-                      className={`pl-8 ${isDarkMode ? "bg-gray-700 text-white border-gray-600 placeholder-gray-400" : ""}`}
+                      className={`pl-8 pr-10 ${isDarkMode ? "bg-gray-700 text-white border-gray-600 placeholder-gray-400" : ""}`}
                       value={destination}
                       onChange={(e) => setDestination(e.target.value)}
                       disabled={isSimulationRunning}
                     />
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => handleMapPicker('destination')}
+                      disabled={isSimulationRunning}
+                      className={`absolute right-1 top-1 h-8 w-8 p-0 ${
+                        isMapPickerMode === 'destination' 
+                          ? isDarkMode ? 'bg-blue-700 text-white' : 'bg-blue-100 text-blue-600' 
+                          : isDarkMode ? 'hover:bg-gray-600' : 'hover:bg-gray-100'
+                      }`}
+                      title="Pick from map"
+                    >
+                      <Map className="h-4 w-4" />
+                    </Button>
                   </div>
                 </div>
 
@@ -439,9 +525,24 @@ export function ControlPanel({
         <TabsContent value="directions">
           <Card className={isDarkMode ? "bg-gray-800 border-gray-700" : ""}>
             <CardHeader className={isDarkMode ? "text-white" : ""}>
-              <CardTitle>Navigation Instructions</CardTitle>
+              <div className="flex items-center justify-between">
+                <CardTitle>Navigation Instructions</CardTitle>
+                {(isSimulationRunning && routeInfo?.steps?.length) && (
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setIsInstructionPanelExpanded(!isInstructionPanelExpanded)}
+                    className={`px-2 py-1 text-xs ${isDarkMode ? "hover:bg-gray-700" : ""}`}
+                  >
+                    {isInstructionPanelExpanded ? '📋 Compact' : '📋 Expand'}
+                  </Button>
+                )}
+              </div>
               <CardDescription className={isDarkMode ? "text-gray-400" : ""}>
-                Turn-by-turn directions and alerts
+                {isInstructionPanelExpanded 
+                  ? "Turn-by-turn directions and alerts"
+                  : "Current navigation instruction"
+                }
               </CardDescription>
               
               {/* Voice Narrator Toggle */}
@@ -501,63 +602,111 @@ export function ControlPanel({
                 <div className="space-y-4">
                   {/* Add a key with lastRouteInfoUpdate to force re-rendering when we receive updates */}
                   <div key={`steps-container-${lastRouteInfoUpdate}`}>
-                    {routeInfo?.steps?.map((step, index) => (
-                      <div 
-                        key={`nav-step-${index}-${step._forceUpdate || lastRouteInfoUpdate}`} 
-                        className={`p-3 rounded-md border ${
-                          index === routeInfo.currentStepIndex
-                            ? isDarkMode 
-                              ? "bg-blue-900 border-blue-700 text-white" 
-                              : "bg-blue-50 border-blue-200"
-                            : isDarkMode
-                              ? "bg-gray-700 border-gray-600"
-                              : "bg-gray-50 border-gray-200"
-                        } ${step.completed ? "opacity-70" : ""}`}
-                      >
-                        <div className="flex items-start gap-3">
-                          <div className={`mt-1 flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full ${
+                    {isInstructionPanelExpanded ? (
+                      // Expanded mode - show all steps
+                      routeInfo?.steps?.map((step, index) => (
+                        <div 
+                          key={`nav-step-${index}-${step._forceUpdate || lastRouteInfoUpdate}`} 
+                          className={`p-3 rounded-md border ${
                             index === routeInfo.currentStepIndex
-                              ? isDarkMode
-                                ? "bg-blue-500 text-white"
-                                : "bg-blue-500 text-white"
-                              : step.completed
+                              ? isDarkMode 
+                                ? "bg-blue-900 border-blue-700 text-white" 
+                                : "bg-blue-50 border-blue-200"
+                              : isDarkMode
+                                ? "bg-gray-700 border-gray-600"
+                                : "bg-gray-50 border-gray-200"
+                          } ${step.completed ? "opacity-70" : ""}`}
+                        >
+                          <div className="flex items-start gap-3">
+                            <div className={`mt-1 flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full ${
+                              index === routeInfo.currentStepIndex
                                 ? isDarkMode
-                                  ? "bg-gray-600 text-gray-300"
-                                  : "bg-gray-400 text-white"
-                                : isDarkMode
-                                  ? "bg-gray-600 text-gray-300" 
-                                  : "bg-gray-300 text-gray-700"
-                          }`}>
-                            {step.completed ? (
-                              <Check className="h-3 w-3" />
-                            ) : (
-                              <span className="text-xs">{index + 1}</span>
-                            )}
-                          </div>
-                          <div className="flex-1">
-                            <p className={`${step.completed ? "line-through" : ""} ${
-                              isDarkMode ? "text-gray-200" : ""
-                            }`}
-                            >
-                              {step.instruction}
-                            </p>
-                            {step.distance && (
-                              <p className={`text-xs ${
-                                isDarkMode ? "text-gray-400" : "text-gray-500"
-                              }`}>
-                                {step.distance}
+                                  ? "bg-blue-500 text-white"
+                                  : "bg-blue-500 text-white"
+                                : step.completed
+                                  ? isDarkMode
+                                    ? "bg-gray-600 text-gray-300"
+                                    : "bg-gray-400 text-white"
+                                  : isDarkMode
+                                    ? "bg-gray-600 text-gray-300" 
+                                    : "bg-gray-300 text-gray-700"
+                            }`}>
+                              {step.completed ? (
+                                <Check className="h-3 w-3" />
+                              ) : (
+                                <span className="text-xs">{index + 1}</span>
+                              )}
+                            </div>
+                            <div className="flex-1">
+                              <p className={`${step.completed ? "line-through" : ""} ${
+                                isDarkMode ? "text-gray-200" : ""
+                              }`}
+                              >
+                                {step.instruction}
                               </p>
-                            )}
+                              {step.distance && (
+                                <p className={`text-xs ${
+                                  isDarkMode ? "text-gray-400" : "text-gray-500"
+                                }`}>
+                                  {step.distance}
+                                </p>
+                              )}
+                            </div>
                           </div>
                         </div>
-                      </div>
-                    ))}
+                      ))
+                    ) : (
+                      // Contracted mode - show only current step
+                      routeInfo?.currentStepIndex !== undefined && 
+                      routeInfo?.steps?.[routeInfo.currentStepIndex] && (
+                        <div 
+                          className={`p-4 rounded-md border-2 ${
+                            isDarkMode 
+                              ? "bg-blue-900 border-blue-600 text-white" 
+                              : "bg-blue-50 border-blue-300"
+                          }`}
+                        >
+                          <div className="flex items-start gap-3">
+                            <div className={`mt-1 flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full ${
+                              isDarkMode
+                                ? "bg-blue-500 text-white"
+                                : "bg-blue-500 text-white"
+                            }`}>
+                              <span className="text-sm font-medium">
+                                {routeInfo.currentStepIndex + 1}
+                              </span>
+                            </div>
+                            <div className="flex-1">
+                              <p className={`text-base font-medium ${
+                                isDarkMode ? "text-white" : "text-gray-900"
+                              }`}>
+                                {routeInfo.steps[routeInfo.currentStepIndex].instruction}
+                              </p>
+                              {routeInfo.steps[routeInfo.currentStepIndex].distance && (
+                                <p className={`text-sm mt-1 ${
+                                  isDarkMode ? "text-blue-200" : "text-blue-700"
+                                }`}>
+                                  {routeInfo.steps[routeInfo.currentStepIndex].distance}
+                                </p>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+                      )
+                    )}
                   </div>
                   
                   {/* Debug information */}
-                  {isSimulationRunning && routeInfo?.steps && (
+                  {isSimulationRunning && routeInfo?.steps && isInstructionPanelExpanded && (
                     <div className="mt-2 text-xs text-gray-500">
                       Showing step {routeInfo.currentStepIndex !== undefined ? routeInfo.currentStepIndex + 1 : 0} of {routeInfo.steps.length}
+                    </div>
+                  )}
+                  
+                  {/* Current step indicator for contracted mode */}
+                  {isSimulationRunning && routeInfo?.steps && !isInstructionPanelExpanded && (
+                    <div className={`mt-2 text-center text-sm ${isDarkMode ? "text-gray-300" : "text-gray-600"}`}>
+                      Step {routeInfo.currentStepIndex !== undefined ? routeInfo.currentStepIndex + 1 : 0} of {routeInfo.steps.length}
                     </div>
                   )}
                 </div>

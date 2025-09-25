@@ -126,9 +126,17 @@
   -webkit-backdrop-filter: blur(12px);
   display: flex;
   flex-direction: column;
-  padding: 6em 2em 2em 2em;
+  padding: 6em 1em 2em 1em;
   overflow-y: auto;
   z-index: 10;
+  transition: background-color 0.3s ease;
+  scrollbar-width: none;
+}
+
+/* Dark mode panel background */
+.staggered-menu-wrapper[data-dark-mode="true"] .staggered-menu-panel {
+  background: #1f2937;
+  color: #f9fafb;
 }
 
 [data-position='left'] .staggered-menu-panel {
@@ -180,6 +188,12 @@
   font-size: 1rem;
   font-weight: 500;
   color: var(--sm-accent, #ff0000);
+  transition: color 0.3s ease;
+}
+
+/* Dark mode socials title */
+.staggered-menu-wrapper[data-dark-mode="true"] .sm-socials-title {
+  color: var(--sm-accent, #ff6b6b);
 }
 
 .sm-socials-list {
@@ -210,6 +224,38 @@
   outline-offset: 3px;
 }
 
+/* Special styling for theme toggle button within socials */
+.sm-socials-link[aria-label*="mode"] {
+  border-radius: 4px;
+  padding: 4px 8px;
+  margin: -4px -8px;
+  transition: all 0.3s ease;
+}
+
+
+/* Ensure consistent opacity behavior for theme toggle button */
+.sm-socials-list:hover .sm-socials-link[aria-label*="mode"] {
+  opacity: 0.35;
+}
+
+.sm-socials-list:hover .sm-socials-link[aria-label*="mode"]:hover {
+  opacity: 1;
+}
+
+.sm-socials-list:focus-within .sm-socials-link[aria-label*="mode"] {
+  opacity: 0.35;
+}
+
+.sm-socials-list:focus-within .sm-socials-link[aria-label*="mode"]:focus-visible {
+  opacity: 1;
+}
+
+/* Dark mode focus styles */
+.staggered-menu-wrapper[data-dark-mode="true"] .sm-socials-link:focus-visible {
+  outline: 2px solid var(--sm-accent, #ff6b6b);
+  outline-offset: 3px;
+}
+
 .sm-socials-list:focus-within .sm-socials-link {
   opacity: 0.35;
 }
@@ -229,10 +275,25 @@
   transition:
     color 0.3s ease,
     opacity 0.3s ease;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: inherit;
+  text-align: left;
+  width: auto;
 }
 
 .sm-socials-link:hover {
   color: var(--sm-accent, #ff0000);
+}
+
+/* Dark mode social links */
+.staggered-menu-wrapper[data-dark-mode="true"] .sm-socials-link {
+  color: #f9fafb;
+}
+
+.staggered-menu-wrapper[data-dark-mode="true"] .sm-socials-link:hover {
+  color: var(--sm-accent, #ff6b6b);
 }
 
 .sm-panel-title {
@@ -267,6 +328,11 @@
   display: inline-block;
   text-decoration: none;
   padding-right: 1.4em;
+}
+
+/* Dark mode panel items */
+.staggered-menu-wrapper[data-dark-mode="true"] .sm-panel-item {
+  color: #f9fafb;
 }
 
 .staggered-menu-panel .sm-socials-list .sm-socials-link {

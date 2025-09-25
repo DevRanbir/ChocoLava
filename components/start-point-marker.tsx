@@ -20,13 +20,14 @@ export function StartPointMarker({
   const infoWindowRef = useRef<google.maps.InfoWindow | null>(null)
   const pulseCircleRef = useRef<google.maps.Circle | null>(null)
 
+  // Initialize marker only once when component mounts or key props change
   useEffect(() => {
-    if (!window.googleMap || !position) {
-      console.log("No map or position for start marker");
+    if (!window.googleMap) {
+      console.log("No map available for start marker");
       return;
     }
 
-    console.log("Creating start marker at", position, "isMoving:", isMoving, "vehicle type:", vehicleType);
+    console.log("Initializing start marker, isMoving:", isMoving, "vehicle type:", vehicleType);
 
     // Clean up any previous markers
     if (markerRef.current) {
@@ -47,8 +48,8 @@ export function StartPointMarker({
     if (isMoving) {
       // Use the specific ambulance image URL provided by user
       const iconUrl = vehicleType === 'ambulance' 
-        ? "https://png.pngtree.com/png-vector/20230831/ourmid/pngtree-3d-render-illustration-ambulance-siren-front-view-png-image_9199093.png"  // User-provided ambulance image
-        : "https://static.vecteezy.com/system/resources/previews/019/907/530/non_2x/fire-truck-graphic-clipart-design-free-png.png"; // Updated fire truck image
+        ? "https://png.pngtree.com/png-vector/20230831/ourmid/pngtree-3d-render-illustration-ambulance-siren-front-view-png-image_9199093.png"
+        : "https://static.vecteezy.com/system/resources/previews/019/907/530/non_2x/fire-truck-graphic-clipart-design-free-png.png";
         
       icon = {
         url: iconUrl,
@@ -69,9 +70,9 @@ export function StartPointMarker({
       };
     }
 
-    // Create the marker with the icon
+    // Create the marker with initial position
     const marker = new window.google.maps.Marker({
-      position,
+      position: position,
       map: window.googleMap,
       icon: icon,
       title: isMoving 
@@ -126,7 +127,7 @@ export function StartPointMarker({
         fillOpacity: 0.3,
         map: window.googleMap,
         center: position,
-        radius: 80, // Larger radius for better visibility
+        radius: 80,
         zIndex: 5,
       });
       
@@ -149,7 +150,37 @@ export function StartPointMarker({
         pulseCircleRef.current.setMap(null);
       }
     };
-  }, [position, isManuallyEntered, isMoving, vehicleType]);
+  }, [isManuallyEntered, isMoving, vehicleType]); // Remove position from dependencies
+
+  // Separate effect to update position only
+  useEffect(() => {
+    if (!markerRef.current || !position) {
+      return;
+    }
+
+    // Only update position, don't recreate marker
+    markerRef.current.setPosition(position);
+    
+    // Update pulse circle position if it exists
+    if (pulseCircleRef.current) {
+      pulseCircleRef.current.setCenter(position);
+    }
+
+    // Update info window content with new position if it's open
+    if (infoWindowRef.current && isMoving) {
+      const updatedContent = `
+        <div style="padding: 10px; min-width: 200px;">
+          <div style="font-weight: bold; color: ${vehicleType === 'ambulance' ? '#2962FF' : '#FF3D00'}; margin-bottom: 8px; font-size: 16px;">
+            Moving ${vehicleType === 'ambulance' ? 'Ambulance' : 'Fire Truck'}
+          </div>
+          <div style="margin-bottom: 8px;">
+            <strong>Current Position:</strong> ${position.lat.toFixed(6)}, ${position.lng.toFixed(6)}
+          </div>
+        </div>
+      `;
+      infoWindowRef.current.setContent(updatedContent);
+    }
+  }, [position, isMoving, vehicleType]);
 
   return null;
 } 
