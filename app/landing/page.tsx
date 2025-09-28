@@ -5,7 +5,10 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { StaggeredMenu } from "@/components/StaggeredMenu"
-import { DotLottieReact } from '@lottiefiles/dotlottie-react';
+import Lottie from "lottie-react";
+import landingAnimation from "@/components/landing-animation.json" assert { type: "json" };
+import { PageLoader } from "@/components/page-loader";
+import { useTheme } from "@/contexts/theme-context";
 
 import { 
   MapPin, 
@@ -30,27 +33,18 @@ import {
 import Link from "next/link"
 
 export default function LandingPage() {
-  const [isDarkMode, setIsDarkMode] = useState(false)
+  const { isDarkMode, toggleDarkMode } = useTheme();
   const [isMenuOpen, setIsMenuOpen] = useState(false)
 
   const menuItems = [
-    { label: 'Home', ariaLabel: 'Go to home page', link: '/landing' },
-    { label: 'Demo', ariaLabel: 'Try the demo', link: '/demo' },
-    { label: 'Features', ariaLabel: 'View features', link: '#features' },
-    { label: 'Solutions', ariaLabel: 'View solutions', link: '#solutions' },
-    { label: 'FAQ', ariaLabel: 'View frequently asked questions', link: '#documentation' },
-    { label: 'Contacts', ariaLabel: 'View contacts', link: '#contacts' }
+    { label: 'Demo', ariaLabel: 'View demo', link: '/demo' },
+    { label: 'Reports', ariaLabel: 'check out reports', link: '/dashboard' },
+    { label: 'Contact', ariaLabel: 'Contact us', link: '/contact' },
   ];
 
   const socialItems = [
-    { label: 'Twitter', link: 'https://twitter.com' },
-    { label: 'GitHub', link: 'https://github.com' },
-    { label: 'LinkedIn', link: 'https://linkedin.com' }
+    { label: 'GitHub', link: 'https://github.com/DevRanbir/ChocoLava/' },
   ];
-
-  const toggleDarkMode = () => {
-    setIsDarkMode(!isDarkMode)
-  }
 
   const stats = [
     { value: "45%", label: "Faster response times", icon: TrendingUp },
@@ -113,75 +107,75 @@ export default function LandingPage() {
   ]
 
   return (
-    <div className={`min-h-screen ${isDarkMode ? "dark bg-gray-900 text-white" : "bg-white text-gray-900"}`} style={{ scrollBehavior: 'smooth' }}>
-      {/* Overlay when menu is open - positioned behind menu */}
-      {isMenuOpen && (
-        <div 
-          className="fixed inset-0 bg-black/70 transition-opacity duration-300 z-40"
-          onClick={() => setIsMenuOpen(false)}
-        />
-      )}
+    <PageLoader>
+      <div className={`min-h-screen ${isDarkMode ? "dark bg-gray-900 text-white" : "bg-white text-gray-900"}`} style={{ scrollBehavior: 'smooth' }}>
       
-      {/* StaggeredMenu - only cover viewport when menu is open */}
-      <div 
-        className="fixed top-0 left-0 z-50" 
-        style={{ 
-          width: isMenuOpen ? '100vw' : 'auto', 
-          height: isMenuOpen ? '100vh' : 'auto',
-          pointerEvents: isMenuOpen ? 'auto' : 'none' 
-        }}
-      >
-        <div style={{ 
-          width: isMenuOpen ? '100%' : 'auto', 
-          height: isMenuOpen ? '100%' : 'auto',
-          pointerEvents: isMenuOpen ? 'auto' : 'none' 
-        }}>
-          <StaggeredMenu
-            position="left"
-            items={menuItems}
-            socialItems={socialItems}
-            displaySocials={true}
-            displayItemNumbering={true}
-            menuButtonColor="#000000ff"
-            openMenuButtonColor="#000000ff"
-            changeMenuColorOnOpen={true}
-            colors={['#B19EEF', '#5227FF']}
-            //logoUrl="/path-to-your-logo.svg"
-            accentColor="#ff6b6b"
-            onMenuOpen={() => {
-              console.log('Menu opened')
-              setIsMenuOpen(true)
-            }}
-            onMenuClose={() => {
-              console.log('Menu closed')
-              setIsMenuOpen(false)
-            }}
-            isDarkMode={isDarkMode}
-            onThemeToggle={toggleDarkMode}
-          />
-        </div>
+      {/* StaggeredMenu */}
+      <div className="fixed top-0 left-0 z-50" style={{ height: '100vh', background: '#1a1a1a' }}>
+        <StaggeredMenu
+          position="left"
+          items={menuItems}
+          socialItems={socialItems}
+          displaySocials={true}
+          displayItemNumbering={true}
+          menuButtonColor={isDarkMode ? "#ffffff" : "#000000ff"}
+          openMenuButtonColor={isDarkMode ? "#ffffff" : "#000000ff"}
+          changeMenuColorOnOpen={true}
+          colors={['#B19EEF', '#5227FF']}
+          accentColor="#ff6b6b"
+          onMenuOpen={() => {
+            console.log('Menu opened')
+            setIsMenuOpen(true)
+          }}
+          onMenuClose={() => {
+            console.log('Menu closed')
+            setIsMenuOpen(false)
+          }}
+          isDarkMode={isDarkMode}
+          onThemeToggle={toggleDarkMode}
+        />
       </div>
 
+      {/* Top Header */}
+      <header className="fixed top-0 right-0 z-40 p-3 sm:p-4 md:p-6">
+        <div className="text-right">
+          <h2 className={`text-sm sm:text-lg md:text-xl font-bold ${isDarkMode ? "text-white" : "text-gray-900"}`}>
+            Smart City Copilot
+          </h2>
+        </div>
+      </header>
+
+      {/* Divider */}
+      <div className={`fixed top-12 sm:top-14 md:top-16 right-3 sm:right-4 md:right-6 w-32 sm:w-40 md:w-48 h-px ${isDarkMode ? "bg-gray-600" : "bg-gray-300"} z-40`}></div>
+  
       {/* Hero Section */}
-      <section className="py-14px-4">
+      <section className="py-8 px-4 pt-16 sm:pt-20 md:pt-4">
         <div className="container mx-auto text-center max-w-4xl">
-            <DotLottieReact
-                src="https://lottie.host/520859b8-949b-475f-b9da-c0a50b49dfb2/Htnlwp0wR4.lottie"
-                loop
-                autoplay
+          <div className="lottie-container w-full max-w-[800px] mx-auto mb-4">
+            <Lottie
+              animationData={landingAnimation}
+              loop
+              autoplay
+              style={{ 
+                width: '100%', 
+                height: 'auto',
+                maxWidth: '800px',
+                aspectRatio: '16/9'
+              }}
             />
-          <h1 className="text-4xl md:text-6xl font-bold mb-6 mt-5">
+          </div>
+          <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-6xl font-bold mb-4 sm:mb-6 mt-2 sm:-mt-6 md:-mt-4">
             Emergency route control
-            <br />
+            <br className="hidden sm:block" />
             <span className="text-red-500">for critical response</span>
           </h1>
-          <p className={`text-lg md:text-xl mb-8 max-w-2xl mx-auto ${isDarkMode ? "text-gray-300" : "text-gray-600"}`}>
+          <p className={`text-base sm:text-lg md:text-xl mb-6 sm:mb-8 max-w-2xl mx-auto px-4 sm:px-0 ${isDarkMode ? "text-gray-300" : "text-gray-600"}`}>
             Advanced mapping and route optimization for emergency services. 
             Get ambulances and fire trucks to destinations faster with AI-powered routing.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Button size="lg" className="bg-red-500 hover:bg-red-600" asChild>
-              <Link href="/" style={{ pointerEvents: 'none' }}>Coming Soon</Link>
+              <Link href="/contact">Contact Now</Link>
             </Button>
             <Button size="lg" variant="outline">
               <Link href="/demo">View Demo</Link>
@@ -190,83 +184,46 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* Map Demo Section */}
-      <section className="py-16 px-4">
-        <div className="container mx-auto">
-          <div className={`rounded-2xl overflow-hidden border ${isDarkMode ? "border-gray-800 bg-gray-800" : "border-gray-200 bg-gray-50"}`}>
-            {/* Map Placeholder */}
-            <div className="h-96 bg-gradient-to-br from-blue-100 to-green-100 dark:from-blue-900 dark:to-green-900 relative">
-              <div className="absolute inset-0 flex items-center justify-center">
-                <div className="text-center">
-                  <MapPin className="h-16 w-16 mx-auto mb-4 text-blue-500" />
-                  <p className={`text-lg font-semibold ${isDarkMode ? "text-gray-300" : "text-gray-700"}`}>
-                    Interactive Emergency Route Demo
-                  </p>
-                  <p className={`text-sm ${isDarkMode ? "text-gray-400" : "text-gray-600"}`}>
-                    Real-time routing and traffic light optimization
-                  </p>
-                </div>
-              </div>
-              
-              {/* Status indicators */}
-              <div className="absolute top-4 left-4 space-y-2">
-                <Badge className="bg-green-500 text-white">Emergency Route Active</Badge>
-                <Badge variant="outline" className={`${isDarkMode ? "text-gray-300 border-gray-600" : ""}`}>
-                  Response time optimized
-                </Badge>
-              </div>
-              
-              {/* Control panel indicator */}
-              <div className="absolute bottom-4 right-4">
-                <Button size="sm" className="bg-red-500 hover:bg-red-600">
-                  <Zap className="h-4 w-4 mr-2" />
-                  Control Panel
-                </Button>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
 
       {/* Features Grid */}
-      <section className="py-16 px-4" id="features">
+      <section className="py-8 sm:py-12 md:py-16 px-4" id="features">
         <div className="container mx-auto">
-          <div className="text-center mb-12">
+          <div className="text-center mb-8 sm:mb-12">
             <Badge className="mb-4 bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200">
               Emergency Features
             </Badge>
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-4">
               Saving lives through
-              <br />
+              <br className="hidden sm:block" />
               faster response
             </h2>
-            <p className={`text-lg max-w-2xl mx-auto ${isDarkMode ? "text-gray-300" : "text-gray-600"}`}>
+            <p className={`text-base sm:text-lg max-w-2xl mx-auto px-4 sm:px-0 ${isDarkMode ? "text-gray-300" : "text-gray-600"}`}>
               Emergency services trust our platform to reduce response times 
               and coordinate critical medical operations effectively.
             </p>
           </div>
 
           {/* Stats Grid */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-16">
+          <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 md:gap-6 mb-8 sm:mb-12 md:mb-16">
             {stats.map((stat, index) => (
               <Card key={index} className={`text-center ${isDarkMode ? "bg-gray-800 border-gray-700" : ""}`}>
-                <CardContent className="pt-6">
-                  <stat.icon className="h-8 w-8 mx-auto mb-2 text-red-500" />
-                  <div className="text-2xl md:text-3xl font-bold mb-1">{stat.value}</div>
-                  <div className={`text-sm ${isDarkMode ? "text-gray-400" : "text-gray-600"}`}>{stat.label}</div>
+                <CardContent className="pt-4 sm:pt-6 p-3 sm:p-6">
+                  <stat.icon className="h-6 sm:h-7 md:h-8 w-6 sm:w-7 md:w-8 mx-auto mb-2 text-red-500" />
+                  <div className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-bold mb-1">{stat.value}</div>
+                  <div className={`text-xs sm:text-sm ${isDarkMode ? "text-gray-400" : "text-gray-600"}`}>{stat.label}</div>
                 </CardContent>
               </Card>
             ))}
           </div>
 
           {/* Additional Stats */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-16">
+          <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 md:gap-6 mb-8 sm:mb-12 md:mb-16">
             {additionalStats.map((stat, index) => (
               <Card key={index} className={`text-center ${isDarkMode ? "bg-gray-800 border-gray-700" : ""}`}>
-                <CardContent className="pt-6">
-                  <stat.icon className="h-8 w-8 mx-auto mb-2 text-blue-500" />
-                  <div className="text-2xl md:text-3xl font-bold mb-1">{stat.value}</div>
-                  <div className={`text-sm ${isDarkMode ? "text-gray-400" : "text-gray-600"}`}>{stat.label}</div>
+                <CardContent className="pt-4 sm:pt-6 p-3 sm:p-6">
+                  <stat.icon className="h-6 sm:h-7 md:h-8 w-6 sm:w-7 md:w-8 mx-auto mb-2 text-blue-500" />
+                  <div className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-bold mb-1">{stat.value}</div>
+                  <div className={`text-xs sm:text-sm ${isDarkMode ? "text-gray-400" : "text-gray-600"}`}>{stat.label}</div>
                 </CardContent>
               </Card>
             ))}
@@ -275,32 +232,32 @@ export default function LandingPage() {
       </section>
 
       {/* Features Section */}
-      <section className="py-16 px-4" id="solutions">
+      <section className="py-8 sm:py-12 md:py-16 px-4" id="solutions">
         <div className="container mx-auto">
-          <div className="text-center mb-12">
+          <div className="text-center mb-8 sm:mb-12">
             <Badge className="mb-4 bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">
               Emergency Solutions
             </Badge>
-            <h2 className="text-3xl md:text-4xl font-bold">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold">
               Built for critical emergency
-              <br />
+              <br className="hidden sm:block" />
               response
             </h2>
-            <p className={`text-lg mt-4 max-w-2xl mx-auto ${isDarkMode ? "text-gray-300" : "text-gray-600"}`}>
+            <p className={`text-base sm:text-lg mt-4 max-w-2xl mx-auto px-4 sm:px-0 ${isDarkMode ? "text-gray-300" : "text-gray-600"}`}>
               Advanced mapping technology designed specifically for emergency services, 
               with real-time coordination and intelligent route optimization.
             </p>
           </div>
 
-          <div className="grid md:grid-cols-2 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 md:gap-8">
             {features.map((feature, index) => (
-              <Card key={index} className={`${feature.color} ${isDarkMode ? "bg-gray-800 border-gray-700" : ""} p-6`}>
+              <Card key={index} className={`${feature.color} ${isDarkMode ? "bg-gray-800 border-gray-700" : ""} p-4 sm:p-6`}>
                 <CardHeader>
-                  <feature.icon className="h-12 w-12 mb-4 text-red-500" />
-                  <CardTitle className="text-xl">{feature.title}</CardTitle>
+                  <feature.icon className="h-8 sm:h-10 md:h-12 w-8 sm:w-10 md:w-12 mb-3 sm:mb-4 text-red-500" />
+                  <CardTitle className="text-lg sm:text-xl">{feature.title}</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <CardDescription className={`text-base ${isDarkMode ? "text-gray-300" : "text-gray-600"}`}>
+                  <CardDescription className={`text-sm sm:text-base ${isDarkMode ? "text-gray-300" : "text-gray-600"}`}>
                     {feature.description}
                   </CardDescription>
                 </CardContent>
@@ -311,25 +268,25 @@ export default function LandingPage() {
       </section>
 
       {/* FAQ Section */}
-      <section className="py-16 px-4" id="documentation">
-        <div className="container mx-auto max-w-3xl">
-          <div className="text-center mb-12">
+      <section className="py-8 sm:py-12 md:py-16 px-4" id="documentation">
+        <div className="container mx-auto max-w-xs sm:max-w-lg md:max-w-2xl lg:max-w-3xl">
+          <div className="text-center mb-8 sm:mb-12">
             <Badge className="mb-4 bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-200">
               FAQ
             </Badge>
-            <h2 className="text-3xl font-bold">Frequently asked questions</h2>
+            <h2 className="text-2xl sm:text-3xl font-bold">Frequently asked questions</h2>
           </div>
 
-          <div className="space-y-6">
+          <div className="space-y-4 sm:space-y-6">
             {faqs.map((faq, index) => (
-              <Card key={index} className={`${isDarkMode ? "bg-gray-800 border-gray-700" : ""}`}>
-                <CardHeader>
-                  <CardTitle className="text-lg text-blue-600 dark:text-blue-400">
+              <Card key={index} className={`${isDarkMode ? "bg-gray-800 border-gray-700" : ""} p-4 sm:p-6`}>
+                <CardHeader className="p-0 pb-3 sm:pb-4">
+                  <CardTitle className="text-base sm:text-lg text-blue-600 dark:text-blue-400">
                     {faq.question}
                   </CardTitle>
                 </CardHeader>
-                <CardContent>
-                  <p className={`${isDarkMode ? "text-gray-300" : "text-gray-600"}`}>
+                <CardContent className="p-0">
+                  <p className={`text-sm sm:text-base ${isDarkMode ? "text-gray-300" : "text-gray-600"}`}>
                     {faq.answer}
                   </p>
                 </CardContent>
@@ -340,14 +297,14 @@ export default function LandingPage() {
       </section>
 
       {/* CTA Section */}
-      <section className="py-20 px-4">
-        <div className="container mx-auto text-center max-w-3xl">
-          <h2 className="text-3xl md:text-4xl font-bold mb-4">
+      <section className="py-12 sm:py-16 md:py-20 px-4">
+        <div className="container mx-auto text-center max-w-xs sm:max-w-lg md:max-w-2xl lg:max-w-3xl">
+          <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-4">
             Ready to improve emergency
-            <br />
+            <br className="hidden sm:block" />
             response?
           </h2>
-          <p className={`text-lg mb-8 ${isDarkMode ? "text-gray-300" : "text-gray-600"}`}>
+          <p className={`text-base sm:text-lg mb-6 sm:mb-8 px-4 sm:px-0 ${isDarkMode ? "text-gray-300" : "text-gray-600"}`}>
             Join emergency services worldwide using our platform to save 
             lives through faster, smarter routing.
           </p>
@@ -363,43 +320,43 @@ export default function LandingPage() {
       </section>
 
       {/* Contacts Section */}
-      <section className="py-16 px-4" id="contacts">
-        <div className="container mx-auto max-w-4xl">
-          <div className="text-center mb-12">
+      <section className="py-8 sm:py-12 md:py-16 px-4" id="contacts">
+        <div className="container mx-auto max-w-xs sm:max-w-2xl md:max-w-3xl lg:max-w-4xl">
+          <div className="text-center mb-8 sm:mb-12">
             <Badge className="mb-4 bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200">
               Emergency Contacts
             </Badge>
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-4">
               24/7 Emergency Support
             </h2>
-            <p className={`text-lg max-w-2xl mx-auto ${isDarkMode ? "text-gray-300" : "text-gray-600"}`}>
+            <p className={`text-base sm:text-lg max-w-2xl mx-auto px-4 sm:px-0 ${isDarkMode ? "text-gray-300" : "text-gray-600"}`}>
               Our emergency response team is available around the clock to assist 
               with critical situations and system support.
             </p>
           </div>
 
-          <div className="grid md:grid-cols-2 gap-8">
-            <Card className={`${isDarkMode ? "bg-gray-800 border-gray-700" : ""} p-6`}>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 md:gap-8">
+            <Card className={`${isDarkMode ? "bg-gray-800 border-gray-700" : ""} p-4 sm:p-6`}>
               <CardHeader>
-                <Phone className="h-12 w-12 mb-4 text-red-500" />
-                <CardTitle className="text-xl">Emergency Hotline</CardTitle>
+                <Phone className="h-8 sm:h-10 md:h-12 w-8 sm:w-10 md:w-12 mb-3 sm:mb-4 text-red-500" />
+                <CardTitle className="text-lg sm:text-xl">Emergency Hotline</CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-2xl font-bold text-red-500 mb-2">1-800-EMERGENCY</p>
-                <p className={`${isDarkMode ? "text-gray-300" : "text-gray-600"}`}>
+                <p className="text-xl sm:text-2xl font-bold text-red-500 mb-2">1-800-EMERGENCY</p>
+                <p className={`text-sm sm:text-base ${isDarkMode ? "text-gray-300" : "text-gray-600"}`}>
                   24/7 emergency response hotline for critical situations and immediate system support.
                 </p>
               </CardContent>
             </Card>
 
-            <Card className={`${isDarkMode ? "bg-gray-800 border-gray-700" : ""} p-6`}>
+            <Card className={`${isDarkMode ? "bg-gray-800 border-gray-700" : ""} p-4 sm:p-6`}>
               <CardHeader>
-                <Building className="h-12 w-12 mb-4 text-blue-500" />
-                <CardTitle className="text-xl">Operations Center</CardTitle>
+                <Building className="h-8 sm:h-10 md:h-12 w-8 sm:w-10 md:w-12 mb-3 sm:mb-4 text-blue-500" />
+                <CardTitle className="text-lg sm:text-xl">Operations Center</CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-lg font-semibold mb-2">Emergency Operations HQ</p>
-                <p className={`${isDarkMode ? "text-gray-300" : "text-gray-600"}`}>
+                <p className="text-base sm:text-lg font-semibold mb-2">Emergency Operations HQ</p>
+                <p className={`text-sm sm:text-base ${isDarkMode ? "text-gray-300" : "text-gray-600"}`}>
                   123 Emergency Response Blvd<br />
                   Crisis City, CC 12345<br />
                   Available 24/7 for coordination
@@ -407,27 +364,27 @@ export default function LandingPage() {
               </CardContent>
             </Card>
 
-            <Card className={`${isDarkMode ? "bg-gray-800 border-gray-700" : ""} p-6`}>
+            <Card className={`${isDarkMode ? "bg-gray-800 border-gray-700" : ""} p-4 sm:p-6`}>
               <CardHeader>
-                <Activity className="h-12 w-12 mb-4 text-green-500" />
-                <CardTitle className="text-xl">Technical Support</CardTitle>
+                <Activity className="h-8 sm:h-10 md:h-12 w-8 sm:w-10 md:w-12 mb-3 sm:mb-4 text-green-500" />
+                <CardTitle className="text-lg sm:text-xl">Technical Support</CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-lg font-semibold mb-2">support@emergencyroute.com</p>
-                <p className={`${isDarkMode ? "text-gray-300" : "text-gray-600"}`}>
+                <p className="text-base sm:text-lg font-semibold mb-2">support@emergencyroute.com</p>
+                <p className={`text-sm sm:text-base ${isDarkMode ? "text-gray-300" : "text-gray-600"}`}>
                   Technical support for system issues, training, and implementation assistance.
                 </p>
               </CardContent>
             </Card>
 
-            <Card className={`${isDarkMode ? "bg-gray-800 border-gray-700" : ""} p-6`}>
+            <Card className={`${isDarkMode ? "bg-gray-800 border-gray-700" : ""} p-4 sm:p-6`}>
               <CardHeader>
-                <Shield className="h-12 w-12 mb-4 text-purple-500" />
-                <CardTitle className="text-xl">Emergency Services</CardTitle>
+                <Shield className="h-8 sm:h-10 md:h-12 w-8 sm:w-10 md:w-12 mb-3 sm:mb-4 text-purple-500" />
+                <CardTitle className="text-lg sm:text-xl">Emergency Services</CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-lg font-semibold mb-2">emergency@emergencyroute.com</p>
-                <p className={`${isDarkMode ? "text-gray-300" : "text-gray-600"}`}>
+                <p className="text-base sm:text-lg font-semibold mb-2">emergency@emergencyroute.com</p>
+                <p className={`text-sm sm:text-base ${isDarkMode ? "text-gray-300" : "text-gray-600"}`}>
                   Direct line to emergency coordination team for dispatch and route optimization.
                 </p>
               </CardContent>
@@ -502,5 +459,6 @@ export default function LandingPage() {
         </div>
       </footer>
     </div>
+    </PageLoader>
   )
 }

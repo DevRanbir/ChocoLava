@@ -12,6 +12,8 @@ import { AddVehicleModal } from "@/components/add-vehicle-modal"
 import { MultiVehicleDisplay, VehicleStatusIndicator } from "@/components/multi-vehicle-display"
 import { VehicleManager, Vehicle as VehicleType } from "@/services/vehicle-manager"
 import StaggeredMenu from '@/components/StaggeredMenu';
+import { PageLoader } from "@/components/page-loader";
+import { useTheme } from "@/contexts/theme-context";
 // Type definitions
 interface DirectionStep {
   instruction: string;
@@ -40,10 +42,10 @@ interface VehicleInfo {
 }
 
 export default function Home() {
+  const { isDarkMode, toggleDarkMode } = useTheme();
   const [destination, setDestination] = useState("")
   const [startPoint, setStartPoint] = useState("")
   const [isSimulationRunning, setIsSimulationRunning] = useState(false)
-  const [isDarkMode, setIsDarkMode] = useState(false)
   const [isRoutePreviewActive, setIsRoutePreviewActive] = useState(false)
   // State for storing coordinates
   const [startCoords, setStartCoords] = useState<google.maps.LatLngLiteral | undefined>(undefined)
@@ -55,15 +57,12 @@ export default function Home() {
 
   const menuItems = [
     { label: 'Home', ariaLabel: 'Go to home page', link: '/' },
-    { label: 'About', ariaLabel: 'Learn about us', link: '/about' },
-    { label: 'Services', ariaLabel: 'View our services', link: '/services' },
+    { label: 'Reports', ariaLabel: 'View reports', link: '/dashboard' },
     { label: 'Contact', ariaLabel: 'Get in touch', link: '/contact' }
   ];
 
   const socialItems = [
-    { label: 'Twitter', link: 'https://twitter.com' },
-    { label: 'GitHub', link: 'https://github.com' },
-    { label: 'LinkedIn', link: 'https://linkedin.com' }
+    { label: 'GitHub', link: 'https://github.com/DevRanbir/ChocoLava/s://github.com' },
   ];
 
   // Add routeInfo state
@@ -815,7 +814,7 @@ export default function Home() {
             console.log(`Generated ${vehicleLights.length} traffic lights for additional vehicle route`);
             
             // Merge with existing traffic lights, avoiding duplicates by position
-            const existingPositions = new Map(trafficLights.map(light => 
+            const existingPositions = new globalThis.Map(trafficLights.map(light => 
               [`${light.position.lat.toFixed(5)},${light.position.lng.toFixed(5)}`, light]
             ));
             
@@ -827,7 +826,13 @@ export default function Home() {
             });
             
             // Update traffic lights
-            const mergedLights = Array.from(existingPositions.values());
+            const mergedLights: Array<{
+              id: string;
+              position: google.maps.LatLngLiteral;
+              status: "red" | "yellow" | "green";
+              lastChanged: number;
+              cycleTime: number;
+            }> = Array.from(existingPositions.values());
             setTrafficLights(mergedLights);
             
             // Extract direction steps
@@ -1234,10 +1239,6 @@ export default function Home() {
     return R * c; // Distance in km
   };
 
-  const toggleDarkMode = () => {
-    setIsDarkMode(!isDarkMode)
-  }
-
   // Add button to toggle map view freezing
   const toggleMapViewFreeze = () => {
     setIsMapViewFreezed(!isMapViewFreezed);
@@ -1385,7 +1386,8 @@ export default function Home() {
   const passedTrafficLightsRef = useRef<Set<string>>(new Set());
 
   return (
-    <main className={`flex min-h-screen flex-col ${isDarkMode ? "bg-gray-900 text-gray-100" : ""}`}>
+    <PageLoader>
+      <main className={`flex min-h-screen flex-col ${isDarkMode ? "bg-gray-900 text-gray-100" : ""}`}>
       <div className="flex flex-1 overflow-hidden">
         <div style={{ height: '100vh', background: '#1a1a1a' }}>
           <StaggeredMenu
@@ -1394,8 +1396,8 @@ export default function Home() {
             socialItems={socialItems}
             displaySocials={true}
             displayItemNumbering={true}
-            menuButtonColor="#000000ff"
-            openMenuButtonColor="#000000ff"
+            menuButtonColor={isDarkMode ? "#ffffff" : "#000000ff"}
+            openMenuButtonColor={isDarkMode ? "#ffffff" : "#000000ff"}
             changeMenuColorOnOpen={true}
             colors={['#B19EEF', '#5227FF']}
             //logoUrl="/path-to-your-logo.svg"
@@ -1889,6 +1891,7 @@ export default function Home() {
         </button>
       )}
     </main>
+    </PageLoader>
   )
 }
 

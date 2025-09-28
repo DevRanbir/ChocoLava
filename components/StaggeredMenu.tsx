@@ -41,7 +41,7 @@ export const StaggeredMenu: React.FC<StaggeredMenuProps> = ({
   displayItemNumbering = true,
   className,
   logoUrl = '/src/assets/logos/reactbits-gh-white.svg',
-  menuButtonColor = '#fff',
+  menuButtonColor = '#ffffffff',
   openMenuButtonColor = '#fff',
   changeMenuColorOnOpen = true,
   accentColor = '#5227FF',
@@ -414,7 +414,7 @@ export const StaggeredMenu: React.FC<StaggeredMenuProps> = ({
           </ul>
           {displaySocials && ((socialItems && socialItems.length > 0) || onThemeToggle) && (
             <div className="sm-socials" aria-label="Social links">
-              <h3 className="sm-socials-title">Socials</h3>
+              <h3 className="sm-socials-title">Utilities</h3>
               <ul className="sm-socials-list" role="list">
                 {socialItems && socialItems.map((s, i) => (
                   <li key={s.label + i} className="sm-socials-item">
