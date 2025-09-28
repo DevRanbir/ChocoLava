@@ -139,10 +139,13 @@ export function EmergencyVehicle({
       markerRef.current.setPosition(position)
 
       // Update icon rotation based on heading
-      const icon = markerRef.current.getIcon() as google.maps.Icon
-      if (icon) {
-        icon.rotation = heading
-        markerRef.current.setIcon(icon)
+      // google.maps.Icon type doesn't include a rotation property in the TS defs,
+      // so cast to any when assigning rotation to avoid a type error.
+      const currentIcon = markerRef.current.getIcon()
+      if (currentIcon) {
+        const iconAny = currentIcon as any
+        iconAny.rotation = heading
+        markerRef.current.setIcon(iconAny as unknown as google.maps.Icon)
       }
       
       // Update pulse circle position

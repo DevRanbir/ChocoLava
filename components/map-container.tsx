@@ -25,12 +25,28 @@ export function MapContainer({ children, isDarkMode }: MapContainerProps) {
           apiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || "",
           version: "weekly",
           libraries: ["places", "routes", "geocoding"],
-          retries: 3,
-          retryDelay: 500,
         })
 
+        // Implement a small retry loop with delay because LoaderOptions doesn't accept retryDelay
+        const maxRetries = 3
+        const retryDelay = 500
+        let google: any = null
+        for (let attempt = 0; attempt < maxRetries; attempt++) {
+          try {
+            google = await loader.load()
+            break
+          } catch (err) {
+            // wait before retrying (unless this was the last attempt)
+            if (attempt < maxRetries - 1) {
+              await new Promise((res) => setTimeout(res, retryDelay))
+            } else {
+              throw err
+            }
+          }
+        }
+
         try {
-          const google = await loader.load()
+          if (!google) throw new Error('Failed to load Google Maps')
           console.log("Google Maps loaded successfully")
 
           // Center on Chandigarh, India
@@ -130,14 +146,8 @@ export function MapContainer({ children, isDarkMode }: MapContainerProps) {
           // Initialize the startLocation but don't create a marker
           // The marker will only be created when using the RoutePreview component
           if (window) {
-            window.startLocation = chandigarhCenter;
+            window.startLocation = chandigarhCenter
           }
-
-          // We are removing the map click listener as per user request
-          // No ability to set start location by clicking on the map
-
-          setMapInstance(map)
-          setIsMapLoaded(true)
 
           // Add the map instance to window for child components to access
           if (window) {
@@ -145,12 +155,7 @@ export function MapContainer({ children, isDarkMode }: MapContainerProps) {
             window.google = google
           }
 
-          // Initialize startLocation but don't create a marker until explicitly requested
-          window.startLocation = chandigarhCenter;
-
-          // We are removing the map click listener as per user request
-          // No ability to set start location by clicking on the map
-
+          // Mark map as ready once (avoid duplicate state updates)
           setMapInstance(map)
           setIsMapLoaded(true)
 
