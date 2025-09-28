@@ -71,7 +71,7 @@ NEXT_PUBLIC_GOOGLE_MAPS_API_KEY="your-actual-google-maps-api-key-here"
 
 **`.env`** (backup/fallback):
 ```env
-NEXT_PUBLIC_GOOGLE_MAPS_API_KEY=" AIzaSyBz4MkYPZoUi-RCNklsmYAILnAArAD9XTM"
+NEXT_PUBLIC_GOOGLE_MAPS_API_KEY=" AIzaSyBz4MkYPZoUi-RCNklsmYAILnAArAD9XTM" //this is fake 🤣
 ```
 
 ⚠️ **Important**: Replace `"your-actual-google-maps-api-key-here"` with your actual Google Maps API key from step 3.
@@ -212,3 +212,4 @@ This project is for educational and demonstration purposes.
 
 
 **Need help?** Check the troubleshooting section above or refer to the [Google Maps API documentation](https://developers.google.com/maps/documentation/javascript).
+
