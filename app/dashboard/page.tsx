@@ -24,7 +24,7 @@ import { useTheme } from "@/contexts/theme-context";
 
 export default function Page() {
   const { isDarkMode, toggleDarkMode } = useTheme();
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false); // Default closed
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true); // Default closed
   const [selectedLocation, setSelectedLocation] = useState("Madhya Marg");
   const [showSidebarTrigger, setShowSidebarTrigger] = useState(true);
   const [hasDateFilter, setHasDateFilter] = useState(false);
@@ -287,7 +287,7 @@ export default function Page() {
             open={isSidebarOpen}
             onOpenChange={setIsSidebarOpen}
           >
-            <AppSidebar />
+            <AppSidebar selectedLocation={selectedLocation} />
             <SidebarInset>
             <div className="px-2 sm:px-4 md:px-6 lg:px-8 @container">
               <div className="w-full max-w-6xl mx-auto">

@@ -71,7 +71,7 @@ export function PageLoader({ children, showLoader = true }: PageLoaderProps) {
           animate="in"
           exit="out"
           transition={loaderTransition}
-          className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-white dark:bg-gray-950"
+          className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-white"
         >
           {/* Lottie animation */}
           <div className="flex items-center justify-center w-full">
@@ -81,7 +81,7 @@ export function PageLoader({ children, showLoader = true }: PageLoaderProps) {
           </div>
 
           {/* Loading text */}
-          <div className="-mt-16 text-sm sm:text-base text-gray-700 dark:text-gray-300 font-medium text-center" role="status" aria-live="polite">
+          <div className="-mt-16 text-sm sm:text-base text-gray-700 font-medium text-center" role="status" aria-live="polite">
             Loading...
           </div>
         </motion.div>

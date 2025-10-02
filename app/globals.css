@@ -29,23 +29,321 @@ body {
     animation: fadeInUp 0.3s ease-out forwards;
   }
   
-  /* Custom scrollbar for chatbox */
+  /* ============================================
+   * GLOBAL CUSTOM SCROLLBAR THEME SYSTEM
+   * ============================================
+   * 
+   * This system provides consistent scrollbar theming across the entire website
+   * with optimized designs for both light and dark modes.
+   * 
+   * Available Classes:
+   * - Default: Global scrollbar applied to all elements
+   * - .chatbox-scrollbar: Minimal scrollbar for chat areas
+   * - .thin-scrollbar: Ultra-thin scrollbar for modals/dropdowns
+   * - .elegant-scrollbar: Premium scrollbar with gradients for main content
+   * - .hidden-scrollbar: Completely hidden but functional scrollbar
+   * - .auto-hide-scrollbar: Shows only on hover for clean interfaces
+   * 
+   * Features:
+   * - Responsive to theme changes (light/dark)
+   * - Smooth transitions and hover effects
+   * - Cross-browser compatibility (Webkit + Firefox)
+   * - Consistent design language
+   * ============================================ */
+  
+  /* Global Custom Scrollbar Theme */
+  /* Webkit browsers (Chrome, Safari, Edge) */
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+  
+  ::-webkit-scrollbar-track {
+    background: hsl(var(--background));
+    border-radius: 4px;
+  }
+  
+  ::-webkit-scrollbar-thumb {
+    background: hsl(var(--border) / 0.8);
+    border-radius: 4px;
+    border: 1px solid hsl(var(--background));
+    transition: all 0.2s ease-in-out;
+  }
+  
+  ::-webkit-scrollbar-thumb:hover {
+    background: hsl(var(--muted-foreground) / 0.6);
+    border-color: hsl(var(--muted) / 0.5);
+  }
+  
+  ::-webkit-scrollbar-thumb:active {
+    background: hsl(var(--muted-foreground) / 0.8);
+  }
+  
+  ::-webkit-scrollbar-corner {
+    background: hsl(var(--background));
+  }
+  
+  /* Firefox scrollbar theming */
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: hsl(var(--border) / 0.8) hsl(var(--background));
+  }
+  
+  /* Dark mode specific scrollbar enhancements */
+  .dark ::-webkit-scrollbar-thumb {
+    background: hsl(var(--border) / 0.6);
+    border-color: hsl(var(--background));
+  }
+  
+  .dark ::-webkit-scrollbar-thumb:hover {
+    background: hsl(var(--muted-foreground) / 0.4);
+    border-color: hsl(var(--muted) / 0.3);
+  }
+  
+  .dark ::-webkit-scrollbar-thumb:active {
+    background: hsl(var(--muted-foreground) / 0.6);
+  }
+  
+  /* Special scrollbar for specific components */
   .chatbox-scrollbar::-webkit-scrollbar {
     width: 6px;
   }
   
   .chatbox-scrollbar::-webkit-scrollbar-track {
     background: transparent;
+    border-radius: 3px;
   }
   
   .chatbox-scrollbar::-webkit-scrollbar-thumb {
-    background: hsl(var(--border));
+    background: hsl(var(--border) / 0.7);
     border-radius: 3px;
     transition: background 0.2s ease;
   }
   
   .chatbox-scrollbar::-webkit-scrollbar-thumb:hover {
-    background: hsl(var(--muted-foreground) / 0.7);
+    background: hsl(var(--muted-foreground) / 0.5);
+  }
+  
+  /* Thin scrollbar for modals and dropdowns */
+  .thin-scrollbar::-webkit-scrollbar {
+    width: 4px;
+    height: 4px;
+  }
+  
+  .thin-scrollbar::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  
+  .thin-scrollbar::-webkit-scrollbar-thumb {
+    background: hsl(var(--border) / 0.6);
+    border-radius: 2px;
+    transition: background 0.2s ease;
+  }
+  
+  .thin-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: hsl(var(--muted-foreground) / 0.4);
+  }
+  
+  /* Elegant scrollbar for main content areas */
+  .elegant-scrollbar::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+  
+  .elegant-scrollbar::-webkit-scrollbar-track {
+    background: hsl(var(--muted) / 0.2);
+    border-radius: 5px;
+    margin: 2px;
+  }
+  
+  .elegant-scrollbar::-webkit-scrollbar-thumb {
+    background: linear-gradient(135deg, hsl(var(--primary) / 0.6), hsl(var(--primary) / 0.4));
+    border-radius: 5px;
+    border: 2px solid hsl(var(--background));
+    transition: all 0.3s ease;
+  }
+  
+  .elegant-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(135deg, hsl(var(--primary) / 0.8), hsl(var(--primary) / 0.6));
+    transform: scale(1.05);
+  }
+  
+  /* Hide scrollbar but keep functionality */
+  .hidden-scrollbar {
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* IE and Edge */
+  }
+  
+  .hidden-scrollbar::-webkit-scrollbar {
+    display: none; /* Chrome, Safari, Opera */
+  }
+  
+  /* Auto-hide scrollbar - shows only on hover */
+  .auto-hide-scrollbar::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+  
+  .auto-hide-scrollbar::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  
+  .auto-hide-scrollbar::-webkit-scrollbar-thumb {
+    background: transparent;
+    border-radius: 4px;
+    transition: background 0.2s ease;
+  }
+  
+  .auto-hide-scrollbar:hover::-webkit-scrollbar-thumb {
+    background: hsl(var(--border) / 0.7);
+  }
+  
+  .auto-hide-scrollbar:hover::-webkit-scrollbar-thumb:hover {
+    background: hsl(var(--muted-foreground) / 0.5);
+  }
+  
+  /* Enhanced markdown styling for AI responses */
+  .prose {
+    max-width: none;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    hyphens: auto;
+  }
+  
+  /* Scroll to bottom button animation */
+  .scroll-to-bottom-enter {
+    opacity: 0;
+    transform: translateY(10px);
+    transition: all 0.2s ease-out;
+  }
+  
+  .scroll-to-bottom-enter-active {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  
+  .scroll-to-bottom-exit {
+    opacity: 1;
+    transform: translateY(0);
+    transition: all 0.2s ease-in;
+  }
+  
+  .scroll-to-bottom-exit-active {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  
+  .prose h1, .prose h2, .prose h3, .prose h4, .prose h5, .prose h6 {
+    color: hsl(var(--foreground));
+    font-weight: 700;
+    margin-top: 1rem;
+    margin-bottom: 0.5rem;
+    word-wrap: break-word;
+  }
+  
+  .prose p {
+    color: hsl(var(--foreground));
+    line-height: 1.6;
+    margin-bottom: 0.75rem;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+  }
+  
+  .prose strong {
+    color: hsl(var(--foreground));
+    font-weight: 700;
+  }
+  
+  .prose em {
+    color: hsl(var(--foreground));
+    font-style: italic;
+  }
+  
+  .prose code {
+    background-color: hsl(var(--muted));
+    color: hsl(var(--foreground));
+    padding: 0.125rem 0.375rem;
+    border-radius: 0.25rem;
+    font-size: 0.875rem;
+    font-family: ui-monospace, SFMono-Regular, "SF Mono", Consolas, "Liberation Mono", Menlo, monospace;
+    word-break: break-all;
+    overflow-wrap: break-word;
+  }
+  
+  .prose pre {
+    background-color: hsl(var(--muted) / 0.5);
+    border: 1px solid hsl(var(--border));
+    border-radius: 0.5rem;
+    padding: 1rem;
+    overflow-x: auto;
+    margin: 0.5rem 0;
+  }
+  
+  .prose pre code {
+    background-color: transparent;
+    padding: 0;
+    border-radius: 0;
+    font-size: 0.875rem;
+  }
+  
+  .prose table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1rem 0;
+    border: 1px solid hsl(var(--border));
+    border-radius: 0.5rem;
+    overflow: hidden;
+  }
+  
+  .prose th, .prose td {
+    border: 1px solid hsl(var(--border));
+    padding: 0.75rem;
+    text-align: left;
+  }
+  
+  .prose th {
+    background-color: hsl(var(--muted) / 0.5);
+    font-weight: 600;
+    color: hsl(var(--foreground));
+  }
+  
+  .prose td {
+    color: hsl(var(--foreground));
+  }
+  
+  .prose ul, .prose ol {
+    color: hsl(var(--foreground));
+    margin: 0.5rem 0;
+    padding-left: 1.5rem;
+  }
+  
+  .prose li {
+    margin: 0.25rem 0;
+    color: hsl(var(--foreground));
+  }
+  
+  .prose blockquote {
+    border-left: 4px solid hsl(var(--primary));
+    padding-left: 1rem;
+    margin: 1rem 0;
+    font-style: italic;
+    color: hsl(var(--muted-foreground));
+  }
+  
+  .prose a {
+    color: hsl(var(--primary));
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+  
+  .prose a:hover {
+    color: hsl(var(--primary) / 0.8);
+  }
+  
+  /* Syntax highlighting for code blocks */
+  .prose .hljs {
+    background: hsl(var(--muted) / 0.5) !important;
+    color: hsl(var(--foreground)) !important;
   }
   
   /* For Firefox */

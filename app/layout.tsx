@@ -2,6 +2,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { PageTransition } from "@/components/page-transition";
 import { ThemeProvider } from "@/contexts/theme-context";
+import { ThemeWrapper } from "@/components/theme-wrapper";
 import TitleSetter from "@/components/title-setter";
 
 const fontSans = Geist({
@@ -20,7 +21,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="light">
+    <html lang="en">
       <head>
         <link rel="icon" href="/favicon.svg" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -29,10 +30,12 @@ export default function RootLayout({
         className={`${fontSans.variable} ${fontMono.variable} font-sans antialiased`}
       >
         <ThemeProvider>
-          <TitleSetter />
-          <PageTransition>
-            {children}
-          </PageTransition>
+          <ThemeWrapper>
+            <TitleSetter />
+            <PageTransition>
+              {children}
+            </PageTransition>
+          </ThemeWrapper>
         </ThemeProvider>
       </body>
     </html>
