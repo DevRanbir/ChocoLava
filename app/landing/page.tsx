@@ -132,8 +132,9 @@ export default function LandingPage() {
     <PageLoader>
       <div className={`min-h-screen ${isDarkMode ? "dark bg-gray-900 text-white" : "bg-white text-gray-900"}`} style={{ scrollBehavior: 'smooth' }}>
       
-      {/* PillNav positioned at bottom right - only show when scrolled past 100vh */}
-      <div className={`fixed bottom-6 right-5 z-50 ease-in-out transition-all duration-150 ${
+      {/* PillNav - Desktop: bottom right, Mobile: bottom center navbar */}
+      {/* Desktop PillNav - bottom right */}
+      <div className={`hidden md:block fixed bottom-6 right-5 z-50 ease-in-out transition-all duration-150 ${
         showPillNav 
           ? 'opacity-100 translate-y-0 pointer-events-auto' 
           : 'opacity-0 translate-y-4 pointer-events-none'
@@ -157,6 +158,47 @@ export default function LandingPage() {
         />
       </div>
 
+      {/* Mobile Navigation Bar - bottom center */}
+      <div className={`md:hidden fixed bottom-0 left-0 right-0 z-50 transition-all duration-300 ease-in-out ${
+        showPillNav 
+          ? 'opacity-100 translate-y-0 pointer-events-auto' 
+          : 'opacity-0 translate-y-full pointer-events-none'
+      }`}>
+        <div className={`mx-4 mb-4 rounded-xl backdrop-blur-md border shadow-lg ${
+          isDarkMode 
+            ? 'bg-gray-900/90 border-gray-700' 
+            : 'bg-white/90 border-gray-200'
+        }`}>
+          <nav className="flex justify-center items-center py-3 px-4">
+            <div className="flex gap-6">
+              <Link href="/demo" className={`px-3 py-2 rounded-lg transition-all duration-200 font-medium text-xs ${
+                isDarkMode 
+                  ? 'text-gray-300 hover:text-white hover:bg-gray-800/60' 
+                  : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100/60'
+              }`}>
+                Demo
+              </Link>
+              
+              <Link href="/dashboard" className={`px-3 py-2 rounded-lg transition-all duration-200 font-medium text-xs ${
+                isDarkMode 
+                  ? 'text-gray-300 hover:text-white hover:bg-gray-800/60' 
+                  : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100/60'
+              }`}>
+                Reports
+              </Link>
+              
+              <Link href="/contact" className={`px-3 py-2 rounded-lg transition-all duration-200 font-medium text-xs ${
+                isDarkMode 
+                  ? 'text-gray-300 hover:text-white hover:bg-gray-800/60' 
+                  : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100/60'
+              }`}>
+                Contact
+              </Link>
+            </div>
+          </nav>
+        </div>
+      </div>
+
       {/* Top Header */}
       <header className="fixed top-0 right-0 z-40 p-3 sm:p-4 md:p-6">
         <div className="text-right">
@@ -170,42 +212,44 @@ export default function LandingPage() {
       <div className={`fixed top-12 sm:top-14 md:top-16 right-3 sm:right-4 md:right-6 w-32 sm:w-40 md:w-48 h-px ${isDarkMode ? "bg-gray-600" : "bg-gray-300"} z-40`}></div>
   
       {/* Hero Section */}
-      <section className="relative py-8 px-4 pt-16 sm:pt-20 md:pt-4 min-h-screen flex items-center">
-        <div className="container mx-auto">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
+      <section className="relative py-8 px-4 pt-20 sm:pt-24 md:pt-8 min-h-screen flex items-center">
+        <div className="container mx-auto max-w-7xl">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-12 items-center">
             {/* Left side - Text content */}
-            <div className="text-left lg:pr-8">
-              <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold mb-4 sm:mb-6">
+            <div className="text-left lg:pl-20 order-2 lg:order-1">
+              <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-5xl xl:text-6xl font-bold mb-4 sm:mb-6 leading-tight">
                 Emergency route control
-                <br />
-                <span className="text-red-500">for critical response</span>
+                <br className="hidden sm:block" />
+                <span className="text-red-500"> for critical response</span>
               </h1>
-              <p className={`text-base sm:text-lg md:text-xl mb-6 sm:mb-8 max-w-2xl ${isDarkMode ? "text-gray-300" : "text-gray-600"}`}>
-                Made by team ChocoLava for Advanced mapping and route optimization for emergency services.<br />
-                Get ambulances and fire trucks to destinations faster with AI-powered routing.
+              <p className={`text-lg sm:text-xl md:text-xl mb-6 sm:mb-8 max-w-2xl leading-relaxed ${isDarkMode ? "text-gray-300" : "text-gray-600"}`}>
+                Made by team <span className="font-semibold text-red-500">ChocoLava</span> for advanced mapping and route optimization for emergency services.
+                <br className="hidden sm:block" />
+                 Get ambulances and fire trucks to destinations faster with AI-powered routing.
               </p>
-              <div className="flex flex-col sm:flex-row gap-4">
-                <Button size="lg" className="bg-red-500 hover:bg-red-600" asChild>
+              <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
+                <Button size="lg" className="bg-red-500 hover:bg-red-600 text-white font-semibold py-3 px-6" asChild>
                   <Link href="/dashboard">View Reports</Link>
                 </Button>
-                <Button size="lg" variant="outline">
+                <Button size="lg" variant="outline" className="border-red-500 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 font-semibold py-3 px-6" asChild>
                   <Link href="/demo">View Demo</Link>
                 </Button>
               </div>
             </div>
             
             {/* Right side - Lottie animation background */}
-            <div className="relative lg:block">
-              <div className="lottie-container w-full">
+            <div className="relative order-1 lg:order-2 mb-6 lg:mb-0">
+              <div className="lottie-container w-full flex justify-center">
                 <Lottie
                   animationData={landingAnimation}
                   loop
                   autoplay
                   style={{ 
-                    width: '400%', 
+                    width: '100%', 
                     height: 'auto',
-                    maxWidth: '120%'
+                    maxWidth: '400px'
                   }}
+                  className="lg:max-w-none lg:w-full lg:scale-150 xl:scale-250 "
                 />
               </div>
             </div>
@@ -224,7 +268,7 @@ export default function LandingPage() {
             <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-4">
               Saving lives through
               <br className="hidden sm:block" />
-              faster response
+               faster response
             </h2>
             <p className={`text-base sm:text-lg max-w-2xl mx-auto px-4 sm:px-0 ${isDarkMode ? "text-gray-300" : "text-gray-600"}`}>
               Emergency services trust our platform to reduce response times 
@@ -270,7 +314,7 @@ export default function LandingPage() {
             <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold">
               Built for critical emergency
               <br className="hidden sm:block" />
-              response
+               response
             </h2>
             <p className={`text-base sm:text-lg mt-4 max-w-2xl mx-auto px-4 sm:px-0 ${isDarkMode ? "text-gray-300" : "text-gray-600"}`}>
               Advanced mapping technology designed specifically for emergency services, 
