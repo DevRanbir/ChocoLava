@@ -9,6 +9,8 @@ import Lottie from "lottie-react";
 import landingAnimation from "@/components/landing-animation.json" assert { type: "json" };
 import { PageLoader } from "@/components/page-loader";
 import { useTheme } from "@/contexts/theme-context";
+import PillNav from '@/components/PillNav';
+import logo from '@/public/favicon.svg';
 
 import { 
   MapPin, 
@@ -110,31 +112,24 @@ export default function LandingPage() {
     <PageLoader>
       <div className={`min-h-screen ${isDarkMode ? "dark bg-gray-900 text-white" : "bg-white text-gray-900"}`} style={{ scrollBehavior: 'smooth' }}>
       
-      {/* StaggeredMenu */}
-      <div className="fixed top-0 left-0 z-50" style={{ height: '100vh', background: '#1a1a1a' }}>
-        <StaggeredMenu
-          position="left"
-          items={menuItems}
-          socialItems={socialItems}
-          displaySocials={true}
-          displayItemNumbering={true}
-          menuButtonColor={isDarkMode ? "#ffffff" : "#000000ff"}
-          openMenuButtonColor={isDarkMode ? "#ffffff" : "#000000ff"}
-          changeMenuColorOnOpen={true}
-          colors={['#B19EEF', '#5227FF']}
-          accentColor="#ff6b6b"
-          onMenuOpen={() => {
-            console.log('Menu opened')
-            setIsMenuOpen(true)
-          }}
-          onMenuClose={() => {
-            console.log('Menu closed')
-            setIsMenuOpen(false)
-          }}
-          isDarkMode={isDarkMode}
-          onThemeToggle={toggleDarkMode}
-        />
-      </div>
+      {/* PillNav positioned at bottom right */}
+      <PillNav
+        logo={logo}
+        logoAlt="Company Logo"
+        items={[
+          { label: 'Home', href: '/' },
+          { label: 'Demo', href: '/demo' },
+          { label: 'Contact', href: '/contact' }
+        ]}
+        activeHref="/"
+        className="custom-nav"
+        ease="power2.easeOut"
+        baseColor={isDarkMode ? "#ffffff" : "#0000007a"}
+        pillColor={isDarkMode ? "#000000" : "#ffffffff"}
+        hoveredPillTextColor={isDarkMode ? "#000000" : "#ffffff"}
+        pillTextColor={isDarkMode ? "#ffffff" : "#0000007a"}
+        hidden={true}
+      />
 
       {/* Top Header */}
       <header className="fixed top-0 right-0 z-40 p-3 sm:p-4 md:p-6">

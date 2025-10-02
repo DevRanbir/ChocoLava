@@ -32,7 +32,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { RiSendPlaneLine, RiChatSmile3Line, RiRobot2Line, RiArrowDownLine } from "@remixicon/react";
+import { RiSendPlaneLine, RiChatSmile3Line, RiRobot2Line, RiArrowDownLine, RiSparkling2Fill, RiSparkling2Line } from "@remixicon/react";
 import { groqService, GROQ_MODELS, type ChatMessage } from "@/services/groq-service";
 import { generateLocationSystemPrompt, availableLocations } from "@/services/location-data-service";
 import { useTheme } from "@/contexts/theme-context";
@@ -79,24 +79,20 @@ export function AppSidebar({ selectedLocation = "Madhya Marg", ...props }: AppSi
   const [newMessageCount, setNewMessageCount] = React.useState(0);
   const lastMessageRef = React.useRef<HTMLDivElement>(null);
   const scrollAreaRef = React.useRef<HTMLDivElement>(null);
-  const { setOpen } = useSidebar();
+  const { setOpen, setOpenMobile, isMobile } = useSidebar();
   const { isDarkMode, toggleDarkMode } = useTheme();
 
-  const handleClose = React.useCallback(() => {
-    // Multiple methods to ensure sidebar closes on mobile
-    setOpen(false);
-    
-    // Force close if the context method doesn't work
-    const sidebarElement = document.querySelector('[data-sidebar="sidebar"]');
-    if (sidebarElement) {
-      sidebarElement.setAttribute('data-state', 'closed');
+  const handleClose = React.useCallback((e?: React.MouseEvent) => {
+    if (e) {
+      e.preventDefault();
+      e.stopPropagation();
     }
-    
-    // Trigger a small delay and try again if needed
-    setTimeout(() => {
-      setOpen(false);
-    }, 50);
-  }, [setOpen]);
+
+    setOpen(false);
+    if (isMobile) {
+      setOpenMobile(false);
+    }
+  }, [isMobile, setOpen, setOpenMobile]);
 
   const handleModelChange = (modelId: string) => {
     setSelectedModel(modelId);
@@ -508,20 +504,10 @@ export function AppSidebar({ selectedLocation = "Madhya Marg", ...props }: AppSi
           <Button
             variant="ghost"
             size="icon"
-            onClick={toggleDarkMode}
-            onTouchEnd={toggleDarkMode}
-            className="h-12 w-12 md:h-10 md:w-10 lg:h-8 lg:w-8 p-0 hover:bg-accent/50 active:bg-accent/70 touch-manipulation cursor-pointer select-none"
-            style={{ WebkitTapHighlightColor: 'transparent' }}
-          >
-            {isDarkMode ? <Sun className="h-5 w-5 md:h-4 md:w-4 text-muted-foreground hover:text-foreground transition-colors pointer-events-none" /> : <Moon className="h-5 w-5 md:h-4 md:w-4 text-muted-foreground hover:text-foreground transition-colors pointer-events-none" />}
-            <span className="sr-only">Toggle theme</span>
-          </Button>
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={handleClose}
+            onClick={(e) => handleClose(e)}
             className="h-12 w-12 md:h-10 md:w-10 lg:h-8 lg:w-8 p-0 hover:bg-accent/50 active:bg-accent/70 touch-manipulation cursor-pointer"
             type="button"
+            aria-label="Close sidebar"
           >
             <X className="h-6 w-6 md:h-5 md:w-5 lg:h-4 lg:w-4 text-muted-foreground hover:text-foreground transition-colors" />
             <span className="sr-only">Close sidebar</span>
@@ -530,7 +516,7 @@ export function AppSidebar({ selectedLocation = "Madhya Marg", ...props }: AppSi
         
         <div className="px-1 -mt-0.5">
           <div className="flex items-center gap-2 mb-4">
-            <RiRobot2Line className="h-5 w-5 text-blue-600" />
+            <RiSparkling2Line className="h-5 w-5" />
             <div className="flex flex-col">
               <span className="font-semibold text-foreground">SCC - Smart City Copilot</span>
               <span className="text-xs text-muted-foreground">by Team ChocoLava</span>

@@ -1,13 +1,13 @@
 "use client";
 
 import { AppSidebar } from "@/components/app-sidebar";
-import { StaggeredMenu } from "@/components/StaggeredMenu";
 import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
 import {
   SidebarInset,
   SidebarProvider,
   SidebarTrigger,
+  useSidebar,
 } from "@/components/ui/sidebar";
 import { Chart01 } from "@/components/chart-01";
 import { Chart02 } from "@/components/chart-02";
@@ -19,8 +19,35 @@ import { ActionButtons } from "@/components/action-buttons";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { PageLoader } from "@/components/page-loader";
 import { useState, useEffect } from "react";
-import { X } from "lucide-react";
+import { X, Bot } from "lucide-react";
 import { useTheme } from "@/contexts/theme-context";
+import { RiSparkling2Line } from "@remixicon/react";
+
+// Custom Chatbox Trigger Component
+function ChatboxTrigger({ 
+  isSidebarOpen, 
+  onToggle, 
+  isDarkMode 
+}: { 
+  isSidebarOpen: boolean; 
+  onToggle: () => void; 
+  isDarkMode: boolean; 
+}) {
+  return (
+    <Button
+      variant="ghost"
+      onClick={onToggle}
+      className={`ms-1 flex items-center gap-2 px-3 py-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors ${
+        isDarkMode ? "text-gray-200 hover:text-white" : "text-gray-700 hover:text-gray-900"
+      }`}
+    >
+      <RiSparkling2Line className={`w-4 h-4 ${isDarkMode ? "text-gray-200" : "text-gray-700"}`} />
+      <span className={`text-xs sm:text-sm font-medium  ${isDarkMode ? "text-gray-200" : "text-gray-700"}`}>
+        {isSidebarOpen ? "Close Chatbox" : "Open Chatbox"}
+      </span>
+    </Button>
+  );
+}
 
 export default function Page() {
   const { isDarkMode, toggleDarkMode } = useTheme();
@@ -221,16 +248,6 @@ export default function Page() {
     }, 1000);
   };
 
-  const menuItems = [
-    { label: 'Home', ariaLabel: 'Go to home page', link: '/' },
-    { label: 'Demo', ariaLabel: 'View demo', link: '/demo' },
-    { label: 'Contact', ariaLabel: 'Go to contact page', link: '/contact' },
-  ];
-
-  const socialItems = [
-    { label: 'GitHub', link: 'https://github.com/DevRanbir/ChocoLava/' },
-  ];
-
   // Simulate date filter being applied (you can connect this to actual DatePicker state)
   const handleDateFilterChange = (hasFilter: boolean) => {
     setHasDateFilter(hasFilter);
@@ -239,48 +256,6 @@ export default function Page() {
   return (
     <PageLoader>
       <div className={`flex min-h-screen ${isDarkMode ? "dark bg-gray-900 text-white" : "bg-white text-gray-900"}`}>
-        
-        {/* StaggeredMenu - Always show on mobile, show when sidebar is open on desktop */}
-        <div className="block md:hidden fixed top-2 left-0 z-40" style={{ height: '115vh', background: '#1a1a1a' }}>
-          <StaggeredMenu
-            position="left"
-            items={menuItems}
-            socialItems={socialItems}
-            displaySocials={true}
-            displayItemNumbering={true}
-            menuButtonColor={isDarkMode ? "#ffffff" : "#000000ff"}
-            openMenuButtonColor={isDarkMode ? "#ffffff" : "#000000ff"}
-            changeMenuColorOnOpen={true}
-            colors={['#B19EEF', '#5227FF']}
-            accentColor="#ff6b6b"
-            onMenuOpen={() => console.log('Menu opened')}
-            onMenuClose={() => console.log('Menu closed')}
-            isDarkMode={isDarkMode}
-            onThemeToggle={toggleDarkMode}
-          />
-        </div>
-        {/* Desktop StaggeredMenu - show when sidebar is open */}
-        {isSidebarOpen && (
-          <div className="hidden md:block fixed -top-2 left-0 z-40" style={{ height: '100vh', background: '#1a1a1a' }}>
-            <StaggeredMenu
-              position="left"
-              items={menuItems}
-              socialItems={socialItems}
-              displaySocials={true}
-              displayItemNumbering={true}
-              menuButtonColor={isDarkMode ? "#ffffff" : "#000000ff"}
-              openMenuButtonColor={isDarkMode ? "#ffffff" : "#000000ff"}
-              changeMenuColorOnOpen={true}
-              colors={['#B19EEF', '#5227FF']}
-              accentColor="#ff6b6b"
-              onMenuOpen={() => console.log('Menu opened')}
-              onMenuClose={() => console.log('Menu closed')}
-              isDarkMode={isDarkMode}
-              onThemeToggle={toggleDarkMode}
-            />
-          </div>
-        )}
-
         {/* Main Content */}
         <div className="flex flex-1">   
           <SidebarProvider 
@@ -291,13 +266,26 @@ export default function Page() {
             <SidebarInset>
             <div className="px-2 sm:px-4 md:px-6 lg:px-8 @container">
               <div className="w-full max-w-6xl mx-auto">
-                <header className={`flex flex-wrap gap-2 sm:gap-3 min-h-16 sm:min-h-20 py-3 sm:py-4 shrink-0 items-center transition-all ease-linear border-b ${isDarkMode ? "border-gray-700" : "border-gray-200"}`}>
+                <header className={`flex flex-wrap gap-2 sm:gap-3 min-h-16 sm:min-h-20 py-3 sm:py-4 shrink-0 items-center transition-all ease-linear`}>
                   {/* Left side - Replace SidebarTrigger with Chatbox text */}
                   <div className="flex flex-1 items-center gap-2">
                     {showSidebarTrigger && (
-                      <SidebarTrigger className="-ms-1">
-                        <span className={`text-xs font-medium px-1 ${isDarkMode ? "text-gray-200" : "text-gray-700"}`}>Chatbox</span>
-                      </SidebarTrigger>
+                      <>
+                        {/* Desktop/PC - Custom ChatboxTrigger */}
+                        <div className="hidden md:block">
+                          <ChatboxTrigger 
+                            isSidebarOpen={isSidebarOpen}
+                            onToggle={handleSidebarToggle}
+                            isDarkMode={isDarkMode}
+                          />
+                        </div>
+                        {/* Mobile/Tablet - Original SidebarTrigger */}
+                        <div className="block md:hidden">
+                          <SidebarTrigger className="ms-1">
+                            <span className={`text-xs font-medium px-1 ${isDarkMode ? "text-gray-200" : "text-gray-700"}`}>Chatbox</span>
+                          </SidebarTrigger>
+                        </div>
+                      </>
                     )}
                     <div className="max-lg:hidden lg:contents">
                       <Separator
@@ -326,7 +314,12 @@ export default function Page() {
                   </div>
                   {/* Right side */}
                   <div className="no-print">
-                    <ActionButtons onExport={handleExport} hasDateFilter={hasDateFilter} />
+                    <ActionButtons 
+                      onExport={handleExport} 
+                      hasDateFilter={hasDateFilter}
+                      isDarkMode={isDarkMode}
+                      toggleDarkMode={toggleDarkMode}
+                    />
                   </div>
                 </header>
                 
@@ -366,6 +359,8 @@ export default function Page() {
           </SidebarInset>
         </SidebarProvider>
       </div>
+      
+      
     </div>
     </PageLoader>
   );
