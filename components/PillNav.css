@@ -1,14 +1,14 @@
 .pill-nav-container {
   position: fixed;
   bottom: 20px;
-  right: 20px;
+  left: 50%;
+  transform: translateX(-100%);
   z-index: 99;
 }
 
 @media (max-width: 768px) {
   .pill-nav-container {
     bottom: 10px;
-    right: 10px;
     width: auto;
   }
 }

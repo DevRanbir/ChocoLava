@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
@@ -30,36 +30,56 @@ import {
   Sun,
   Moon,
   Menu,
-  X
+  X,
+  CarTaxiFront,
 } from "lucide-react"
 import Link from "next/link"
 
 export default function LandingPage() {
   const { isDarkMode, toggleDarkMode } = useTheme();
   const [isMenuOpen, setIsMenuOpen] = useState(false)
+  const [showPillNav, setShowPillNav] = useState(false)
 
-  const menuItems = [
-    { label: 'Demo', ariaLabel: 'View demo', link: '/demo' },
-    { label: 'Reports', ariaLabel: 'check out reports', link: '/dashboard' },
-    { label: 'Contact', ariaLabel: 'Contact us', link: '/contact' },
-  ];
+  // Handle scroll to show/hide PillNav based on viewport position
+  useEffect(() => {
+    let ticking = false;
+    
+    const handleScroll = () => {
+      if (!ticking) {
+        requestAnimationFrame(() => {
+          const scrollY = window.scrollY;
+          const viewportHeight = window.innerHeight;
+          
+          // Show PillNav when user scrolls past 100vh with a small buffer
+          const shouldShow = scrollY > viewportHeight + 50;
+          setShowPillNav(shouldShow);
+          
+          ticking = false;
+        });
+        ticking = true;
+      }
+    };
 
-  const socialItems = [
-    { label: 'GitHub', link: 'https://github.com/DevRanbir/ChocoLava/' },
-  ];
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    
+    // Check initial position
+    handleScroll();
+    
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   const stats = [
     { value: "45%", label: "Faster response times", icon: TrendingUp },
     { value: "99.9%", label: "System uptime", icon: Activity },
     { value: "24/7", label: "Emergency support", icon: Clock },
-    { value: "500+", label: "Cities served", icon: Building }
+    { value: "500+", label: "Ai prompts served", icon: Building }
   ]
 
   const additionalStats = [
-    { value: "2.3M", label: "Emergency calls handled", icon: Phone },
+    { value: "Many", label: "Emergency calls handled", icon: Phone },
     { value: "15sec", label: "Average route calculation", icon: Target },
     { value: "98%", label: "Accuracy rate", icon: CheckCircle },
-    { value: "150+", label: "Emergency departments", icon: Ambulance }
+    { value: "Most", label: "Emergency departments Linked", icon: Ambulance }
   ]
 
   const features = [
@@ -76,9 +96,9 @@ export default function LandingPage() {
       color: "bg-yellow-50 dark:bg-yellow-900/20"
     },
     {
-      title: "Multi-vehicle coordination",
-      description: "Coordinate multiple emergency vehicles with intelligent dispatching and resource allocation.",
-      icon: Users,
+      title: "AI-Vehicle coordination",
+      description: "Coordinate multiple vehicles with intelligent dispatching and resource allocation to reach their destinations efficiently.",
+      icon: CarTaxiFront,
       color: "bg-blue-50 dark:bg-blue-900/20"
     },
     {
@@ -92,7 +112,7 @@ export default function LandingPage() {
   const faqs = [
     {
       question: "How fast can the system calculate emergency routes?",
-      answer: "Our AI-powered system calculates optimal emergency routes in under 15 seconds, considering real-time traffic, road conditions, and emergency priorities."
+      answer: "Our AI-powered system calculates optimal emergency routes within few seconds, considering real-time traffic, road conditions, and emergency priorities."
     },
     {
       question: "What types of emergency vehicles are supported?",
@@ -112,24 +132,30 @@ export default function LandingPage() {
     <PageLoader>
       <div className={`min-h-screen ${isDarkMode ? "dark bg-gray-900 text-white" : "bg-white text-gray-900"}`} style={{ scrollBehavior: 'smooth' }}>
       
-      {/* PillNav positioned at bottom right */}
-      <PillNav
-        logo={logo}
-        logoAlt="Company Logo"
-        items={[
-          { label: 'Home', href: '/' },
-          { label: 'Demo', href: '/demo' },
-          { label: 'Contact', href: '/contact' }
-        ]}
-        activeHref="/"
-        className="custom-nav"
-        ease="power2.easeOut"
-        baseColor={isDarkMode ? "#ffffff" : "#0000007a"}
-        pillColor={isDarkMode ? "#000000" : "#ffffffff"}
-        hoveredPillTextColor={isDarkMode ? "#000000" : "#ffffff"}
-        pillTextColor={isDarkMode ? "#ffffff" : "#0000007a"}
-        hidden={true}
-      />
+      {/* PillNav positioned at bottom right - only show when scrolled past 100vh */}
+      <div className={`fixed bottom-6 right-5 z-50 ease-in-out transition-all duration-150 ${
+        showPillNav 
+          ? 'opacity-100 translate-y-0 pointer-events-auto' 
+          : 'opacity-0 translate-y-4 pointer-events-none'
+      }`}>
+        <PillNav
+          logo={logo}
+          logoAlt="Company Logo"
+          items={[
+            { label: 'Demo', href: '/demo' },
+            { label: 'Reports', href: '/dashboard' },
+            { label: 'Contact', href: '/contact' }
+          ]}
+          activeHref="/"
+          className="custom-nav"
+          ease="power2.easeOut"
+          baseColor={isDarkMode ? "#ffffff" : "#EF4444"}
+          pillColor={isDarkMode ? "#000000" : "#ffffffff"}
+          hoveredPillTextColor={isDarkMode ? "#000000" : "#ffffff"}
+          pillTextColor={isDarkMode ? "#ffffff" : "#000000c8"}
+          hidden={true}
+        />
+      </div>
 
       {/* Top Header */}
       <header className="fixed top-0 right-0 z-40 p-3 sm:p-4 md:p-6">
@@ -144,37 +170,45 @@ export default function LandingPage() {
       <div className={`fixed top-12 sm:top-14 md:top-16 right-3 sm:right-4 md:right-6 w-32 sm:w-40 md:w-48 h-px ${isDarkMode ? "bg-gray-600" : "bg-gray-300"} z-40`}></div>
   
       {/* Hero Section */}
-      <section className="py-8 px-4 pt-16 sm:pt-20 md:pt-4">
-        <div className="container mx-auto text-center max-w-4xl">
-          <div className="lottie-container w-full max-w-[800px] mx-auto mb-4">
-            <Lottie
-              animationData={landingAnimation}
-              loop
-              autoplay
-              style={{ 
-                width: '100%', 
-                height: 'auto',
-                maxWidth: '800px',
-                aspectRatio: '16/9'
-              }}
-            />
-          </div>
-          <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-6xl font-bold mb-4 sm:mb-6 mt-2 sm:-mt-6 md:-mt-4">
-            Emergency route control
-            <br className="hidden sm:block" />
-            <span className="text-red-500">for critical response</span>
-          </h1>
-          <p className={`text-base sm:text-lg md:text-xl mb-6 sm:mb-8 max-w-2xl mx-auto px-4 sm:px-0 ${isDarkMode ? "text-gray-300" : "text-gray-600"}`}>
-            Advanced mapping and route optimization for emergency services. 
-            Get ambulances and fire trucks to destinations faster with AI-powered routing.
-          </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button size="lg" className="bg-red-500 hover:bg-red-600" asChild>
-              <Link href="/contact">Contact Now</Link>
-            </Button>
-            <Button size="lg" variant="outline">
-              <Link href="/demo">View Demo</Link>
-            </Button>
+      <section className="relative py-8 px-4 pt-16 sm:pt-20 md:pt-4 min-h-screen flex items-center">
+        <div className="container mx-auto">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
+            {/* Left side - Text content */}
+            <div className="text-left lg:pr-8">
+              <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold mb-4 sm:mb-6">
+                Emergency route control
+                <br />
+                <span className="text-red-500">for critical response</span>
+              </h1>
+              <p className={`text-base sm:text-lg md:text-xl mb-6 sm:mb-8 max-w-2xl ${isDarkMode ? "text-gray-300" : "text-gray-600"}`}>
+                Made by team ChocoLava for Advanced mapping and route optimization for emergency services.<br />
+                Get ambulances and fire trucks to destinations faster with AI-powered routing.
+              </p>
+              <div className="flex flex-col sm:flex-row gap-4">
+                <Button size="lg" className="bg-red-500 hover:bg-red-600" asChild>
+                  <Link href="/dashboard">View Reports</Link>
+                </Button>
+                <Button size="lg" variant="outline">
+                  <Link href="/demo">View Demo</Link>
+                </Button>
+              </div>
+            </div>
+            
+            {/* Right side - Lottie animation background */}
+            <div className="relative lg:block">
+              <div className="lottie-container w-full">
+                <Lottie
+                  animationData={landingAnimation}
+                  loop
+                  autoplay
+                  style={{ 
+                    width: '400%', 
+                    height: 'auto',
+                    maxWidth: '120%'
+                  }}
+                />
+              </div>
+            </div>
           </div>
         </div>
       </section>
@@ -291,29 +325,6 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* CTA Section */}
-      <section className="py-12 sm:py-16 md:py-20 px-4">
-        <div className="container mx-auto text-center max-w-xs sm:max-w-lg md:max-w-2xl lg:max-w-3xl">
-          <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-4">
-            Ready to improve emergency
-            <br className="hidden sm:block" />
-            response?
-          </h2>
-          <p className={`text-base sm:text-lg mb-6 sm:mb-8 px-4 sm:px-0 ${isDarkMode ? "text-gray-300" : "text-gray-600"}`}>
-            Join emergency services worldwide using our platform to save 
-            lives through faster, smarter routing.
-          </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button size="lg" className="bg-red-500 hover:bg-red-600" asChild>
-              <Link href="/demo">Start Emergency Route</Link>
-            </Button>
-            <Button size="lg" variant="outline">
-              Contact Emergency Services
-            </Button>
-          </div>
-        </div>
-      </section>
-
       {/* Contacts Section */}
       <section className="py-8 sm:py-12 md:py-16 px-4" id="contacts">
         <div className="container mx-auto max-w-xs sm:max-w-2xl md:max-w-3xl lg:max-w-4xl">
@@ -330,21 +341,9 @@ export default function LandingPage() {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 md:gap-8">
-            <Card className={`${isDarkMode ? "bg-gray-800 border-gray-700" : ""} p-4 sm:p-6`}>
-              <CardHeader>
-                <Phone className="h-8 sm:h-10 md:h-12 w-8 sm:w-10 md:w-12 mb-3 sm:mb-4 text-red-500" />
-                <CardTitle className="text-lg sm:text-xl">Emergency Hotline</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-xl sm:text-2xl font-bold text-red-500 mb-2">1-800-EMERGENCY</p>
-                <p className={`text-sm sm:text-base ${isDarkMode ? "text-gray-300" : "text-gray-600"}`}>
-                  24/7 emergency response hotline for critical situations and immediate system support.
-                </p>
-              </CardContent>
-            </Card>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-2 sm:gap-3 md:gap-4">
 
-            <Card className={`${isDarkMode ? "bg-gray-800 border-gray-700" : ""} p-4 sm:p-6`}>
+            <Card className={`${isDarkMode ? "bg-gray-800 border-gray-700" : ""} p-4 sm:p-2`}>
               <CardHeader>
                 <Building className="h-8 sm:h-10 md:h-12 w-8 sm:w-10 md:w-12 mb-3 sm:mb-4 text-blue-500" />
                 <CardTitle className="text-lg sm:text-xl">Operations Center</CardTitle>
@@ -352,33 +351,33 @@ export default function LandingPage() {
               <CardContent>
                 <p className="text-base sm:text-lg font-semibold mb-2">Emergency Operations HQ</p>
                 <p className={`text-sm sm:text-base ${isDarkMode ? "text-gray-300" : "text-gray-600"}`}>
-                  123 Emergency Response Blvd<br />
-                  Crisis City, CC 12345<br />
+                  SCC headquarters<br />
+                  Chandigarh City, Sector 17<br />
                   Available 24/7 for coordination
                 </p>
               </CardContent>
             </Card>
 
-            <Card className={`${isDarkMode ? "bg-gray-800 border-gray-700" : ""} p-4 sm:p-6`}>
+            <Card className={`${isDarkMode ? "bg-gray-800 border-gray-700" : ""} p-4 sm:p-2`}>
               <CardHeader>
                 <Activity className="h-8 sm:h-10 md:h-12 w-8 sm:w-10 md:w-12 mb-3 sm:mb-4 text-green-500" />
                 <CardTitle className="text-lg sm:text-xl">Technical Support</CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-base sm:text-lg font-semibold mb-2">support@emergencyroute.com</p>
+                <p className="text-base sm:text-lg font-semibold mb-2">24bcs11076@cuchd.in</p>
                 <p className={`text-sm sm:text-base ${isDarkMode ? "text-gray-300" : "text-gray-600"}`}>
                   Technical support for system issues, training, and implementation assistance.
                 </p>
               </CardContent>
             </Card>
 
-            <Card className={`${isDarkMode ? "bg-gray-800 border-gray-700" : ""} p-4 sm:p-6`}>
+            <Card className={`${isDarkMode ? "bg-gray-800 border-gray-700" : ""} p-4 sm:p-2`}>
               <CardHeader>
                 <Shield className="h-8 sm:h-10 md:h-12 w-8 sm:w-10 md:w-12 mb-3 sm:mb-4 text-purple-500" />
                 <CardTitle className="text-lg sm:text-xl">Emergency Services</CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-base sm:text-lg font-semibold mb-2">emergency@emergencyroute.com</p>
+                <p className="text-base sm:text-lg font-semibold mb-2">+91-9041107458</p>
                 <p className={`text-sm sm:text-base ${isDarkMode ? "text-gray-300" : "text-gray-600"}`}>
                   Direct line to emergency coordination team for dispatch and route optimization.
                 </p>
@@ -395,7 +394,7 @@ export default function LandingPage() {
             <div>
               <div className="flex items-center space-x-2 mb-4">
                 <Shield className="h-6 w-6 text-red-500" />
-                <span className="font-bold">EmergencyRoute</span>
+                <span className="font-bold">Smart City Copilot</span>
               </div>
               <p className={`text-sm ${isDarkMode ? "text-gray-400" : "text-gray-600"}`}>
                 Advanced emergency route 

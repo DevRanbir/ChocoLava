@@ -207,7 +207,7 @@ ${formData.name}`
       <section className="py-8 sm:py-12 md:py-16 px-4" id="contact-methods">
         <div className="container mx-auto">
           <div className="text-center mb-8 sm:mb-12">
-            <Badge className="mb-4 bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200">
+            <Badge className="mb-4 bg-red-100 text-red-800">
               Contact Methods
             </Badge>
             <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-4">
@@ -221,65 +221,48 @@ ${formData.name}`
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 md:gap-8">
-            {contactMethods.map((method, index) => (
-              <Card key={index} className={`${method.color} ${isDarkMode ? "bg-gray-800 border-gray-700" : ""} p-4 sm:p-6`}>
-                <CardHeader>
-                  <method.icon className="h-8 sm:h-10 md:h-12 w-8 sm:w-10 md:w-12 mb-3 sm:mb-4 text-red-500" />
-                  <CardTitle className="text-lg sm:text-xl">{method.title}</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-base sm:text-lg font-semibold text-red-600 dark:text-red-400 mb-2">
-                    {method.contact}
-                  </p>
-                  <CardDescription className={`text-sm sm:text-base ${isDarkMode ? "text-gray-300" : "text-gray-600"}`}>
-                    {method.description}
-                  </CardDescription>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        </div>
-      </section>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-2 sm:gap-3 md:gap-4">
 
-      {/* Stats Grid */}
-      <section className="py-8 sm:py-12 md:py-16 px-4">
-        <div className="container mx-auto">
-          <div className="text-center mb-8 sm:mb-12">
-            <Badge className="mb-4 bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">
-              Our Performance
-            </Badge>
-            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold">
-              Trusted by emergency
-              <br className="hidden sm:block" />
-              services worldwide
-            </h2>
-          </div>
+            <Card className={`${isDarkMode ? "bg-gray-800 border-gray-700" : ""} p-4 sm:p-2`}>
+              <CardHeader>
+                <Building className="h-8 sm:h-10 md:h-12 w-8 sm:w-10 md:w-12 mb-3 sm:mb-4 text-blue-500" />
+                <CardTitle className="text-lg sm:text-xl">Operations Center</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-base sm:text-lg font-semibold mb-2">Emergency Operations HQ</p>
+                <p className={`text-sm sm:text-base ${isDarkMode ? "text-gray-300" : "text-gray-600"}`}>
+                  SCC headquarters<br />
+                  Chandigarh City, Sector 17<br />
+                  Available 24/7 for coordination
+                </p>
+              </CardContent>
+            </Card>
 
-          {/* Stats Grid */}
-          <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 md:gap-6 mb-8 sm:mb-12 md:mb-16">
-            {stats.map((stat, index) => (
-              <Card key={index} className={`text-center ${isDarkMode ? "bg-gray-800 border-gray-700" : ""}`}>
-                <CardContent className="pt-4 sm:pt-6 p-3 sm:p-6">
-                  <stat.icon className="h-6 sm:h-7 md:h-8 w-6 sm:w-7 md:w-8 mx-auto mb-2 text-red-500" />
-                  <div className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-bold mb-1">{stat.value}</div>
-                  <div className={`text-xs sm:text-sm ${isDarkMode ? "text-gray-400" : "text-gray-600"}`}>{stat.label}</div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
+            <Card className={`${isDarkMode ? "bg-gray-800 border-gray-700" : ""} p-4 sm:p-2`}>
+              <CardHeader>
+                <Activity className="h-8 sm:h-10 md:h-12 w-8 sm:w-10 md:w-12 mb-3 sm:mb-4 text-green-500" />
+                <CardTitle className="text-lg sm:text-xl">Technical Support</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-base sm:text-lg font-semibold mb-2">24bcs11076@cuchd.in</p>
+                <p className={`text-sm sm:text-base ${isDarkMode ? "text-gray-300" : "text-gray-600"}`}>
+                  Technical support for system issues, training, and implementation assistance.
+                </p>
+              </CardContent>
+            </Card>
 
-          {/* Additional Stats */}
-          <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 md:gap-6">
-            {additionalStats.map((stat, index) => (
-              <Card key={index} className={`text-center ${isDarkMode ? "bg-gray-800 border-gray-700" : ""}`}>
-                <CardContent className="pt-4 sm:pt-6 p-3 sm:p-6">
-                  <stat.icon className="h-6 sm:h-7 md:h-8 w-6 sm:w-7 md:w-8 mx-auto mb-2 text-blue-500" />
-                  <div className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-bold mb-1">{stat.value}</div>
-                  <div className={`text-xs sm:text-sm ${isDarkMode ? "text-gray-400" : "text-gray-600"}`}>{stat.label}</div>
-                </CardContent>
-              </Card>
-            ))}
+            <Card className={`${isDarkMode ? "bg-gray-800 border-gray-700" : ""} p-4 sm:p-2`}>
+              <CardHeader>
+                <Shield className="h-8 sm:h-10 md:h-12 w-8 sm:w-10 md:w-12 mb-3 sm:mb-4 text-purple-500" />
+                <CardTitle className="text-lg sm:text-xl">Emergency Services</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-base sm:text-lg font-semibold mb-2">+91-9041107458</p>
+                <p className={`text-sm sm:text-base ${isDarkMode ? "text-gray-300" : "text-gray-600"}`}>
+                  Direct line to emergency coordination team for dispatch and route optimization.
+                </p>
+              </CardContent>
+            </Card>
           </div>
         </div>
       </section>
@@ -288,7 +271,7 @@ ${formData.name}`
       <section className="py-8 sm:py-12 md:py-16 px-4" id="contact-form">
         <div className="container mx-auto max-w-xs sm:max-w-lg md:max-w-2xl lg:max-w-3xl">
           <div className="text-center mb-8 sm:mb-12">
-            <Badge className="mb-4 bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200 text-xs sm:text-sm px-3 sm:px-4 py-1">
+            <Badge className="mb-4 bg-red-100 text-red-800 text-xs sm:text-sm px-3 sm:px-4 py-1">
               Emergency Communication Hub
             </Badge>
             <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-4 leading-tight">
