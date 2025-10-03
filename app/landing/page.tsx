@@ -11,6 +11,9 @@ import { PageLoader } from "@/components/page-loader";
 import { useTheme } from "@/contexts/theme-context";
 import PillNav from '@/components/PillNav';
 import logo from '@/public/favicon.svg';
+import { AppSidebar } from "@/components/app-sidebar";
+import { SidebarProvider, SidebarTrigger, useSidebar } from "@/components/ui/sidebar";
+import { RiSparkling2Line } from "@remixicon/react";
 
 import { 
   MapPin, 
@@ -32,13 +35,30 @@ import {
   Menu,
   X,
   CarTaxiFront,
+  MessageCircle,
 } from "lucide-react"
 import Link from "next/link"
 
+// Helper component to sync mobile sidebar state
+function SidebarSync({ isOpen }: { isOpen: boolean }) {
+  const { setOpenMobile, isMobile } = useSidebar();
+  
+  useEffect(() => {
+    if (isMobile && isOpen) {
+      setOpenMobile(true);
+    } else if (isMobile && !isOpen) {
+      setOpenMobile(false);
+    }
+  }, [isOpen, isMobile, setOpenMobile]);
+  
+  return null;
+}
+
 export default function LandingPage() {
   const { isDarkMode, toggleDarkMode } = useTheme();
-  const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [showPillNav, setShowPillNav] = useState(false)
+  const [isChatboxOpen, setIsChatboxOpen] = useState(false)
+  const [buttonSuccess, setButtonSuccess] = useState(false)
 
   // Handle scroll to show/hide PillNav based on viewport position
   useEffect(() => {
@@ -130,99 +150,202 @@ export default function LandingPage() {
 
   return (
     <PageLoader>
-      <div className={`min-h-screen ${isDarkMode ? "dark bg-gray-900 text-white" : "bg-white text-gray-900"}`} style={{ scrollBehavior: 'smooth' }}>
-      
-      {/* PillNav - Desktop: bottom right, Mobile: bottom center navbar */}
-      {/* Desktop PillNav - bottom right */}
-      <div className={`hidden md:block fixed bottom-6 right-5 z-50 ease-in-out transition-all duration-150 ${
-        showPillNav 
-          ? 'opacity-100 translate-y-0 pointer-events-auto' 
-          : 'opacity-0 translate-y-4 pointer-events-none'
-      }`}>
-        <PillNav
-          logo={logo}
-          logoAlt="Company Logo"
-          items={[
-            { label: 'Demo', href: '/demo' },
-            { label: 'Reports', href: '/dashboard' },
-            { label: 'Contact', href: '/contact' }
-          ]}
-          activeHref="/"
-          className="custom-nav"
-          ease="power2.easeOut"
-          baseColor={isDarkMode ? "#ffffff" : "#EF4444"}
-          pillColor={isDarkMode ? "#000000" : "#ffffffff"}
-          hoveredPillTextColor={isDarkMode ? "#000000" : "#ffffff"}
-          pillTextColor={isDarkMode ? "#ffffff" : "#000000c8"}
-          hidden={true}
-        />
-      </div>
-
-      {/* Mobile Navigation Bar - bottom center */}
-      <div className={`md:hidden fixed bottom-0 left-0 right-0 z-50 transition-all duration-300 ease-in-out ${
-        showPillNav 
-          ? 'opacity-100 translate-y-0 pointer-events-auto' 
-          : 'opacity-0 translate-y-full pointer-events-none'
-      }`}>
-        <div className={`mx-4 mb-4 rounded-xl backdrop-blur-md border shadow-lg ${
-          isDarkMode 
-            ? 'bg-gray-900/90 border-gray-700' 
-            : 'bg-white/90 border-gray-200'
+      <SidebarProvider 
+        open={isChatboxOpen} 
+        onOpenChange={setIsChatboxOpen}
+      >
+        <div className={`${isDarkMode ? "dark bg-gray-900 text-white w-full" : "bg-white text-gray-900 w-full"}`} style={{ scrollBehavior: 'smooth' }}>
+        
+        {/* Try Chatbox Button - Fixed position */}
+        {!isChatboxOpen && (
+          <div className="fixed top-4 right-4 z-50 block">
+            <style jsx>{`
+              .animated-button {
+                display: block;
+                background-color: #ef4444;
+                width: 150px;
+                height: 45px;
+                line-height: 45px;
+                color: #fff;
+                cursor: pointer;
+                overflow: hidden;
+                border-radius: 6px;
+                transition: all 0.25s cubic-bezier(0.310, -0.105, 0.430, 1.400);
+                text-decoration: none;
+                position: relative;
+              }
+              
+              .animated-button span,
+              .animated-button .icon {
+                display: block;
+                height: 100%;
+                text-align: center;
+                position: absolute;
+                top: 0;
+              }
+              
+              .animated-button span {
+                width: 72%;
+                line-height: inherit;
+                font-size: 14px;
+                text-transform: uppercase;
+                font-weight: 600;
+                left: 0;
+                transition: all 0.25s cubic-bezier(0.310, -0.105, 0.430, 1.400);
+              }
+              
+              .animated-button span:after {
+                content: '';
+                background-color: #dc2626;
+                width: 2px;
+                height: 60%;
+                position: absolute;
+                top: 20%;
+                right: -1px;
+              }
+              
+              .animated-button .icon {
+                width: 28%;
+                right: 0;
+                transition: all 0.25s cubic-bezier(0.310, -0.105, 0.430, 1.400);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+              }
+              
+              .animated-button .icon svg {
+                width: 18px;
+                height: 18px;
+                transition: all 0.25s cubic-bezier(0.310, -0.105, 0.430, 1.400);
+              }
+              
+              .animated-button:hover span {
+                left: -72%;
+                opacity: 0;
+              }
+              
+              .animated-button:hover .icon {
+                width: 100%;
+              }
+              
+              .animated-button:hover .icon svg {
+                width: 24px;
+                height: 24px;
+                color: #dc2626;
+              }
+              
+              .animated-button:hover {
+                background-color: #ffffffff;
+                border: 1px solid #dc2626;
+                color: #dc2626;
+              }
+              
+              .animated-button:active {
+                transform: translateY(1px);
+              }
+            `}</style>
+            <a 
+              className="animated-button"
+              href="#" 
+              role="button"
+              onClick={(e) => {
+                e.preventDefault();
+                setIsChatboxOpen(true);
+              }}
+            >
+              <span>Try Chatbox</span>
+              <div className="icon">
+                <RiSparkling2Line />
+              </div>
+            </a>
+          </div>
+        )}
+        
+        {/* PillNav - Desktop: bottom right, Mobile: bottom center navbar */}
+        {/* Desktop PillNav - bottom right */}
+        <div className={`hidden md:block fixed bottom-6 z-50 ease-in-out transition-all duration-300 ${
+          showPillNav 
+            ? 'opacity-100 translate-y-0 pointer-events-auto' 
+            : 'opacity-0 translate-y-4 pointer-events-none'
+        } ${
+          isChatboxOpen 
+            ? 'right-[28rem]' // Move left when sidebar is open (24rem sidebar width + 4rem margin)
+            : 'right-5' // Normal position when sidebar is closed
         }`}>
-          <nav className="flex justify-center items-center py-3 px-4">
-            <div className="flex gap-6">
-              <Link href="/demo" className={`px-3 py-2 rounded-lg transition-all duration-200 font-medium text-xs ${
-                isDarkMode 
-                  ? 'text-gray-300 hover:text-white hover:bg-gray-800/60' 
-                  : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100/60'
-              }`}>
-                Demo
-              </Link>
-              
-              <Link href="/dashboard" className={`px-3 py-2 rounded-lg transition-all duration-200 font-medium text-xs ${
-                isDarkMode 
-                  ? 'text-gray-300 hover:text-white hover:bg-gray-800/60' 
-                  : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100/60'
-              }`}>
-                Reports
-              </Link>
-              
-              <Link href="/contact" className={`px-3 py-2 rounded-lg transition-all duration-200 font-medium text-xs ${
-                isDarkMode 
-                  ? 'text-gray-300 hover:text-white hover:bg-gray-800/60' 
-                  : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100/60'
-              }`}>
-                Contact
-              </Link>
-            </div>
-          </nav>
+          <PillNav
+            logo={logo}
+            logoAlt="Company Logo"
+            items={[
+              { label: 'Demo', href: '/demo' },
+              { label: 'Reports', href: '/dashboard' },
+              { label: 'Contact', href: '/contact' }
+            ]}
+            activeHref="/"
+            className="custom-nav"
+            ease="power2.easeOut"
+            baseColor={isDarkMode ? "#ffffff" : "#EF4444"}
+            pillColor={isDarkMode ? "#000000" : "#ffffffff"}
+            hoveredPillTextColor={isDarkMode ? "#000000" : "#ffffff"}
+            pillTextColor={isDarkMode ? "#ffffff" : "#000000c8"}
+            hidden={true}
+          />
         </div>
-      </div>
 
-      {/* Top Header */}
-      <header className="fixed top-0 right-0 z-40 p-3 sm:p-4 md:p-6">
-        <div className="text-right">
-          <h2 className={`text-sm sm:text-lg md:text-xl font-bold ${isDarkMode ? "text-white" : "text-gray-900"}`}>
-            Smart City Copilot
-          </h2>
+        {/* Mobile Navigation Bar - bottom center */}
+        {!isChatboxOpen && (
+          <div className={`md:hidden fixed bottom-0 left-0 right-0 z-50 transition-all duration-300 ease-in-out ${
+            showPillNav 
+              ? 'opacity-100 translate-y-0 pointer-events-auto' 
+              : 'opacity-0 translate-y-full pointer-events-none'
+          }`}>
+          <div className={`mx-4 mb-4 rounded-xl backdrop-blur-md border shadow-lg ${
+            isDarkMode 
+              ? 'bg-gray-900/90 border-gray-700' 
+              : 'bg-white/90 border-gray-200'
+          }`}>
+            <nav className="flex justify-center items-center py-3 px-4">
+              <div className="flex gap-6">
+                <Link href="/demo" className={`px-3 py-2 rounded-lg transition-all duration-200 font-medium text-xs ${
+                  isDarkMode 
+                    ? 'text-gray-300 hover:text-white hover:bg-gray-800/60' 
+                    : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100/60'
+                }`}>
+                  Demo
+                </Link>
+                
+                <Link href="/dashboard" className={`px-3 py-2 rounded-lg transition-all duration-200 font-medium text-xs ${
+                  isDarkMode 
+                    ? 'text-gray-300 hover:text-white hover:bg-gray-800/60' 
+                    : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100/60'
+                }`}>
+                  Reports
+                </Link>
+                
+                <Link href="/contact" className={`px-3 py-2 rounded-lg transition-all duration-200 font-medium text-xs ${
+                  isDarkMode 
+                    ? 'text-gray-300 hover:text-white hover:bg-gray-800/60' 
+                    : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100/60'
+                }`}>
+                  Contact
+                </Link>
+              </div>
+            </nav>
+          </div>
         </div>
-      </header>
-
-      {/* Divider */}
-      <div className={`fixed top-12 sm:top-14 md:top-16 right-3 sm:right-4 md:right-6 w-32 sm:w-40 md:w-48 h-px ${isDarkMode ? "bg-gray-600" : "bg-gray-300"} z-40`}></div>
+        )}
   
-      {/* Hero Section */}
-      <section className="relative py-8 px-4 pt-20 sm:pt-24 md:pt-8 min-h-screen flex items-center">
+        {/* Hero Section */}
+        <section className="relative py-8 px-4 pt-8 min-h-screen flex items-center">
         <div className="container mx-auto max-w-7xl">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-12 items-center">
             {/* Left side - Text content */}
-            <div className="text-left lg:pl-20 order-2 lg:order-1">
+            <div className="text-left lg:pl-20 order-2 lg:order-1 p-3">
               <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-5xl xl:text-6xl font-bold mb-4 sm:mb-6 leading-tight">
                 Emergency route control
                 <br className="hidden sm:block" />
                 <span className="text-red-500"> for critical response</span>
               </h1>
-              <p className={`text-lg sm:text-xl md:text-xl mb-6 sm:mb-8 max-w-2xl leading-relaxed ${isDarkMode ? "text-gray-300" : "text-gray-600"}`}>
+              <p className={`text-lg sm:text-xl md:text-xl mb-6 sm:mb-8 leading-relaxed ${isDarkMode ? "text-gray-300" : "text-gray-600"}`}>
                 Made by team <span className="font-semibold text-red-500">ChocoLava</span> for advanced mapping and route optimization for emergency services.
                 <br className="hidden sm:block" />
                  Get ambulances and fire trucks to destinations faster with AI-powered routing.
@@ -246,10 +369,9 @@ export default function LandingPage() {
                   autoplay
                   style={{ 
                     width: '100%', 
-                    height: 'auto',
-                    maxWidth: '400px'
+                    height: 'auto'
                   }}
-                  className="lg:max-w-none lg:w-full lg:scale-150 xl:scale-250 "
+                  className="max-w-[400px] sm:max-w-[500px] md:max-w-[600px] lg:max-w-[700px] xl:max-w-[800px] 2xl:max-w-[900px] w-full"
                 />
               </div>
             </div>
@@ -497,6 +619,12 @@ export default function LandingPage() {
         </div>
       </footer>
     </div>
+    
+    {/* Chatbox Sidebar */}
+    <SidebarSync isOpen={isChatboxOpen} />
+    <AppSidebar selectedLocation="Chandigarh" side="right" className="block" />
+    
+    </SidebarProvider>
     </PageLoader>
   )
 }
